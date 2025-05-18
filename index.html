@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mosso X Chat</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #0d0d0d; color: #fff; }
+    .hidden { display: none; }
+    #chat-box, #auth-box { max-width: 400px; margin: auto; background: #1a1a1a; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px #0ff; }
+    #messages {
+      border: 1px solid #0ff;
+      height: 300px;
+      overflow-y: scroll;
+      padding: 10px;
+      margin-top: 10px;
+      background: #121212;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-radius: 10px;
+    }
+    .message {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 20px;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+      animation: fadeIn 0.3s ease forwards;
+    }
+    .message.other {
+      background: #333;
+      align-self: flex-start;
+      color: #0ff;
+      border-top-left-radius: 0;
+    }
+    .message.self {
+      background: #00cccc;
+      color: black;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+    .message .meta {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+      color: yellow;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(8px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+      background: #222;
+      color: #0ff;
+      border: 1px solid #0ff;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #0ff;
+      color: #000;
+      cursor: pointer;
+    }
+    #points {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #0ff;
+    }
+    #withdraw-warning {
+      color: yellow;
+      font-weight: bold;
+      margin-top: 8px;
+      font-size: 12px;
+      animation: blink 1s infinite;
+    }
+    #welcome-text {
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #0ff;
+      font-size: 12px;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.1; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="auth-box">
+  <h2>Login / Register</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <input type="text" id="username" placeholder="Username (saat register)" />
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="chat-box" class="hidden">
+  <h3>Selamat datang, <span id="user-display">di Mosso X Chat</span></h3>
+  <div id="welcome-text">Silakan mulai mengobrol dan kumpulkan Mosso X Coin!</div>
+
+  <div id="points">Loading Coin Mosso X...</div>
+
+  <input type="text" id="withdraw-wallet" placeholder="Masukkan alamat wallet penarikan" />
+  <input type="number" id="withdraw-amount" placeholder="Jumlah Mosso X yang ingin ditarik" step="0.0001" min="0" />
+
+  <div id="withdraw-warning">
+    ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
+  </div>
+
+  <button onclick="withdrawPoints()">Tarik Coin Mosso X</button>
+
+  <div id="messages"></div>
+  <input type="text" id="message" placeholder="Ketik pesan Anda" />
+  <button onclick="sendMessage()">Kirim</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+  import { getDatabase, ref, set, get, child, push, onChildAdded, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyChIjlbTVpZsrr0VLUMSdFQZxJegQGPxWk",
+    authDomain: "daun-27052.firebaseapp.com",
+    databaseURL: "https://daun-27052-default-rtdb.firebaseio.com",
+    projectId: "daun-27052",
+    storageBucket: "daun-27052.appspot.com",
+    messagingSenderId: "760624272132",
+    appId: "1:760624272132:web:cd77802a15b108e4b2b651"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  const messagesRef = ref(db, "messages");
+
+  let currentUsername = "";
+  let currentUID = "";
+
+  const authBox = document.getElementById("auth-box");
+  const chatBox = document.getElementById("chat-box");
+  const messagesContainer = document.getElementById("messages");
+  const pointsDisplay = document.getElementById("points");
+  const userDisplay = document.getElementById("user-display");
+
+  function showChat() {
+    authBox.classList.add("hidden");
+    chatBox.classList.remove("hidden");
+  }
+
+  function showLogin() {
+    authBox.classList.remove("hidden");
+    chatBox.classList.add("hidden");
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUID = user.uid;
+      const userRef = child(ref(db), 'users/' + user.uid);
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        currentUsername = data.username;
+        userDisplay.textContent = currentUsername;
+        await initDailyPointsRecord();
+        updatePointsDisplay(data.points || 0);
+        showChat();
+        loadMessages();
+      } else {
+        alert("Username tidak ditemukan. Silakan logout dan register kembali.");
+        logout();
+      }
+    } else {
+      showLogin();
+      messagesContainer.innerHTML = "";
+      userDisplay.textContent = "";
+      pointsDisplay.textContent = "Loading Coin Mosso X...";
+    }
+  });
+
+  async function initDailyPointsRecord() {
+    const today = new Date().toISOString().split("T")[0];
+    const dailyPointRef = ref(db, `users/${currentUID}/dailyPoints/${today}`);
+    const snapshot = await get(dailyPointRef);
+    if (!snapshot.exists()) {
+      await set(dailyPointRef, 0);
+    }
+  }
+
+  function updatePointsDisplay(points) {
+    pointsDisplay.innerText = `Coin Mosso X Anda: ${points.toFixed(4)}`;
+  }
+
+  window.register = async function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+
+    if (!email || !password || !username) return alert("Semua field harus diisi!");
+
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await set(ref(db, 'users/' + userCred.user.uid), {
+        username,
+        points: 0,
+        dailyPoints: {},
+      });
+      alert("Berhasil daftar!");
+    } catch (error) {
+      alert("Register error: " + error.message);
+    }
+  };
+
+  window.login = async function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) return alert("Masukkan email dan password!");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      alert("Login error: " + error.message);
+    }
+  };
+
+  window.logout = async function () {
+    await signOut(auth);
+    currentUsername = "";
+    currentUID = "";
+    messagesContainer.innerHTML = "";
+    showLogin();
+  };
+
+  async function addDailyPoint() {
+    const today = new Date().toISOString().split("T")[0];
+    const dailyPointRef = ref(db, `users/${currentUID}/dailyPoints/${today}`);
+    const snapshot = await get(dailyPointRef);
+    let currentDailyPoints = 0;
+    if (snapshot.exists()) {
+      currentDailyPoints = snapshot.val();
+    }
+
+    if (currentDailyPoints < 0.01) {
+      const pointToAdd = 0.0003;
+      let newDailyPoints = parseFloat((currentDailyPoints + pointToAdd).toFixed(4));
+      if (newDailyPoints > 0.01) {
+        const diff = 0.01 - currentDailyPoints;
+        await updateUserPoints(diff);
+        await set(dailyPointRef, 0.01);
+      } else {
+        await updateUserPoints(pointToAdd);
+        await set(dailyPointRef, newDailyPoints);
+      }
+    }
+  }
+
+  async function updateUserPoints(pointsToAdd) {
+    const userRef = ref(db, 'users/' + currentUID);
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+      const currentPoints = snapshot.val().points || 0;
+      const updatedPoints = parseFloat((currentPoints + pointsToAdd).toFixed(4));
+      await update(userRef, { points: updatedPoints });
+      updatePointsDisplay(updatedPoints);
+    }
+  }
+
+  window.sendMessage = async function () {
+    const messageText = document.getElementById("message").value;
+    if (messageText.trim()) {
+      push(messagesRef, {
+        name: currentUsername,
+        text: messageText,
+        timestamp: Date.now()
+      });
+      document.getElementById("message").value = "";
+      await addDailyPoint();
+    }
+  };
+
+  window.withdrawPoints = async function () {
+    const amountInput = document.getElementById("withdraw-amount");
+    const walletInput = document.getElementById("withdraw-wallet");
+    const amount = parseFloat(amountInput.value);
+    const wallet = walletInput.value.trim();
+
+    if (!wallet) return alert("Masukkan alamat wallet penarikan!");
+    if (isNaN(amount) || amount <= 0) return alert("Masukkan jumlah penarikan yang valid!");
+    if (amount < 10) return alert("Minimal penarikan adalah 10 Mosso X!");
+
+    const userRef = ref(db, 'users/' + currentUID);
+    const snapshot = await get(userRef);
+    if (!snapshot.exists()) return alert("User tidak ditemukan!");
+    const currentPoints = snapshot.val().points || 0;
+
+    if (amount > currentPoints) return alert("Saldo tidak mencukupi untuk penarikan.");
+
+    const withdrawalRef = ref(db, 'withdrawals');
+    await push(withdrawalRef, {
+      uid: currentUID,
+      username: currentUsername,
+      amount: amount,
+      wallet,
+      timestamp: Date.now(),
+      status: "pending"
+    });
+
+    await update(userRef, { points: parseFloat((currentPoints - amount).toFixed(4)) });
+    updatePointsDisplay(currentPoints - amount);
+
+    const waMessage = `Halo admin, saya ingin menarik ${amount} Mosso X ke alamat wallet: ${wallet}. Username: ${currentUsername}`;
+    const encodedMsg = encodeURIComponent(waMessage);
+    const waURL = `https://wa.me/6285117579009?text=${encodedMsg}`;
+    window.open(waURL, "_blank");
+
+    alert(`Permintaan penarikan ${amount} Mosso X berhasil dikirim. Mohon tunggu proses verifikasi.`);
+    amountInput.value = "";
+    walletInput.value = "";
+  };
+
+  function loadMessages() {
+    messagesContainer.innerHTML = "";
+    onChildAdded(messagesRef, (data) => {
+      const msg = data.val();
+      const msgElem = document.createElement("div");
+      msgElem.classList.add("message");
+      if (msg.name === currentUsername) {
+        msgElem.classList.add("self");
+      } else {
+        msgElem.classList.add("other");
+      }
+      const time = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      msgElem.innerHTML = `<div class="meta"><strong>${msg.name}</strong> • ${time}</div>${escapeHtml(msg.text)}`;
+      messagesContainer.appendChild(msgElem);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+</script>
+
+</body>
+</html>
