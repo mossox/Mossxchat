@@ -3,359 +3,572 @@
 <head>
   <meta charset="UTF-8" />
   <title>Mosso X Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <style>
-    body { font-family: sans-serif; margin: 20px; background: #0d0d0d; color: #fff; }
-    .hidden { display: none; }
-    #chat-box, #auth-box { max-width: 400px; margin: auto; background: #1a1a1a; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px #0ff; }
-    #messages {
-      border: 1px solid #0ff;
-      height: 300px;
-      overflow-y: scroll;
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f1219;
+      margin: 0; padding: 20px;
+      color: #0ff;
+      text-shadow:
+        0 0 5px #0ff,
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 40px #0ff;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #111622;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow:
+        0 0 10px #0ff,
+        inset 0 0 10px #0ff;
+    }
+    .box {
+      background: #111622;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow:
+        0 0 8px #0ff;
+    }
+    input, button {
+      width: 100%;
       padding: 10px;
       margin-top: 10px;
-      background: #121212;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-radius: 10px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+      background: #00121a;
+      color: #0ff;
+      text-shadow: none;
+      box-shadow:
+        0 0 8px #0ff inset;
     }
-    .message {
-      max-width: 70%;
-      padding: 10px 14px;
+    input::placeholder {
+      color: #0ff;
+      opacity: 0.6;
+    }
+    button {
+      background: #00ffff;
+      color: #001f27;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow:
+        0 0 15px #00ffff;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #33ffff;
+      box-shadow:
+        0 0 25px #33ffff;
+    }
+    .chat-box {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #0ff;
+      padding: 10px;
+      background: #00121a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0ff inset;
+      font-size: 14px;
+      color: #0ff;
+    }
+    .link {
+      color: #00ffff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .list-item {
+      padding: 5px 0;
+      border-bottom: 1px solid #033;
+    }
+    #dashboard, #registerSection {
+      display: none;
+    }
+    @media(max-width:600px){
+      body { padding:10px; }
+      .container { width:100%; padding:0; }
+    }
+
+    /* Chat bubbles WA style */
+    .chat-message {
+      margin: 8px 0;
+      max-width: 75%;
+      padding: 8px 14px;
       border-radius: 20px;
       position: relative;
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.3;
       word-wrap: break-word;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-      animation: fadeIn 0.3s ease forwards;
+      clear: both;
     }
-    .message.other {
-      background: #333;
-      align-self: flex-start;
-      color: #0ff;
-      border-top-left-radius: 0;
+    .chat-message.self {
+      background: #00ff62;
+      color: #001f27;
+      margin-left: auto;
+      border-bottom-right-radius: 2px;
+      box-shadow:
+        0 0 10px #00ffff;
+      float: right;
     }
-    .message.self {
-      background: #00cccc;
-      color: black;
-      align-self: flex-end;
-      border-top-right-radius: 0;
-    }
-    .message .meta {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-bottom: 4px;
-      color: yellow;
-    }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(8px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      background: #222;
-      color: #0ff;
-      border: 1px solid #0ff;
-      border-radius: 5px;
-    }
-    button:hover {
+    .chat-message.other {
       background: #0ff;
-      color: #000;
-      cursor: pointer;
+      color: #003333;
+      margin-right: auto;
+      border-bottom-left-radius: 2px;
+      box-shadow:
+        0 0 10px #0ff;
+      float: left;
     }
-    #points {
-      margin-top: 10px;
+    .chat-message .username {
       font-weight: bold;
-      color: #0ff;
+      display: block;
+      margin-bottom: 3px;
     }
-    #withdraw-warning {
+
+    /* Blink warning */
+    .blink-warning {
       color: yellow;
       font-weight: bold;
-      margin-top: 8px;
-      font-size: 12px;
       animation: blink 1s infinite;
+      text-shadow: 0 0 8px yellow;
+      margin-top: 8px;
     }
-    #welcome-text {
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-      color: #0ff;
-      font-size: 12px;
-    }
+
     @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.1; }
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0; }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <!-- Login -->
+    <div id="loginSection" class="box">
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <button onclick="login()">Masuk</button>
+      <p>Belum punya akun? <span class="link" onclick="toggleView('register')">Daftar di sini</span></p>
+    </div>
 
-<div id="auth-box">
-  <h2>Login / Register</h2>
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="password" placeholder="Password" />
-  <input type="text" id="username" placeholder="Username (saat register)" />
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
-</div>
+    <!-- Register -->
+    <div id="registerSection" class="box">
+      <h2>Register</h2>
+      <input type="email" id="regEmail" placeholder="Email" />
+      <input type="password" id="regPassword" placeholder="Password" />
+      <input type="text" id="regUsername" placeholder="Username (jadi kode referral Anda)" />
+      <input type="text" id="refCode" placeholder="Kode Referral (opsional)" />
+      <button onclick="register()">Daftar</button>
+      <p>Sudah punya akun? <span class="link" onclick="toggleView('login')">Login di sini</span></p>
+    </div>
 
-<div id="chat-box" class="hidden">
-  <h3>Selamat datang, <span id="user-display">di Mosso X Chat</span></h3>
-  <div id="welcome-text">Silakan mulai mengobrol dan kumpulkan Mosso X Coin!</div>
+    <!-- Dashboard -->
+    <div id="dashboard" class="box">
+      <h3>Silakan mulai mengobrol dan kumpulkan Mosso X Coin</h3>
+      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>! 👋</p>
+      <p>Email: <span id="userEmail"></span></p>
+      <p>Coin Mosso X Saya: <b><span id="myPoints">0</span></b></p>
+      <button onclick="logout()">Logout</button>
 
-  <div id="points">Loading Coin Mosso X...</div>
+      <div class="box" style="margin-top:20px;">
+        <h3>Chat Global</h3>
+        <div class="chat-box" id="chatBox"></div>
+        <input id="messageInput" placeholder="Tulis pesan..." />
+        <button onclick="sendMessage()">Kirim</button>
+      </div>
 
-  <input type="text" id="withdraw-wallet" placeholder="Masukkan alamat wallet penarikan" />
-  <input type="number" id="withdraw-amount" placeholder="Jumlah Mosso X yang ingin ditarik" step="0.0001" min="0" />
+      <div class="box" style="margin-top:20px;">
+        <h3>Penarikan Poin</h3>
+        <input id="withdrawName" placeholder="Nama lengkap" />
+        <input id="withdrawUser" placeholder="Username" />
+        <input id="withdrawWallet" placeholder="Alamat Wallet" />
+        <button onclick="requestWithdraw()">Ajukan Penarikan</button>
+        <p id="withdrawWarning" class="blink-warning" style="display:none;">
+          <div id="withdraw-warning">
+            ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
+          </div>
+        </p>
+      </div>
 
-  <div id="withdraw-warning">
-    ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
+      <div class="box" style="margin-top:20px;">
+        <h3>Downline Saya</h3>
+        <div id="downlineList">Memuat...</div>
+      </div>
+
+      <div class="box" style="margin-top:20px;">
+        <h3>Riwayat Bonus</h3>
+        <div id="bonusHistory">Memuat...</div>
+      </div>
+    </div>
   </div>
 
-  <button onclick="withdrawPoints()">Tarik Coin Mosso X</button>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCorYuBtoGM_ooHSz5nuCyisCIHPw6zbcA",
+      authDomain: "cari-jodoh-3619a.firebaseapp.com",
+      databaseURL: "https://cari-jodoh-3619a.firebaseio.com",
+      projectId: "cari-jodoh-3619a"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
 
-  <div id="messages"></div>
-  <input type="text" id="message" placeholder="Ketik pesan Anda" />
-  <button onclick="sendMessage()">Kirim</button>
-  <button onclick="logout()">Logout</button>
-</div>
+    let chatToday = 0;
+    const chatLimit = 0.02;  // max poin chat per hari
+    const refLimit = 0.05;   // max bonus referral per hari
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-  import { getDatabase, ref, set, get, child, push, onChildAdded, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    function toggleView(view) {
+      document.getElementById('loginSection').style.display = (view === 'login') ? 'block' : 'none';
+      document.getElementById('registerSection').style.display = (view === 'register') ? 'block' : 'none';
+    }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyChIjlbTVpZsrr0VLUMSdFQZxJegQGPxWk",
-    authDomain: "daun-27052.firebaseapp.com",
-    databaseURL: "https://daun-27052-default-rtdb.firebaseio.com",
-    projectId: "daun-27052",
-    storageBucket: "daun-27052.appspot.com",
-    messagingSenderId: "760624272132",
-    appId: "1:760624272132:web:cd77802a15b108e4b2b651"
-  };
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
+    }
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
-  const messagesRef = ref(db, "messages");
+    function register() {
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPassword').value;
+      const username = document.getElementById('regUsername').value.trim();
+      const refCode = document.getElementById('refCode').value.trim();
 
-  let currentUsername = "";
-  let currentUID = "";
-
-  const authBox = document.getElementById("auth-box");
-  const chatBox = document.getElementById("chat-box");
-  const messagesContainer = document.getElementById("messages");
-  const pointsDisplay = document.getElementById("points");
-  const userDisplay = document.getElementById("user-display");
-
-  function showChat() {
-    authBox.classList.add("hidden");
-    chatBox.classList.remove("hidden");
-  }
-
-  function showLogin() {
-    authBox.classList.remove("hidden");
-    chatBox.classList.add("hidden");
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUID = user.uid;
-      const userRef = child(ref(db), 'users/' + user.uid);
-      const snapshot = await get(userRef);
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        currentUsername = data.username;
-        userDisplay.textContent = currentUsername;
-        await initDailyPointsRecord();
-        updatePointsDisplay(data.points || 0);
-        showChat();
-        loadMessages();
-      } else {
-        alert("Username tidak ditemukan. Silakan logout dan register kembali.");
-        logout();
+      if (!username.match(/^[a-zA-Z0-9_]+$/)) {
+        alert('Username hanya boleh huruf, angka dan underscore');
+        return;
       }
-    } else {
-      showLogin();
-      messagesContainer.innerHTML = "";
-      userDisplay.textContent = "";
-      pointsDisplay.textContent = "Loading Coin Mosso X...";
-    }
-  });
+      if (!email || !pass || !username) {
+        alert('Email, password dan username harus diisi');
+        return;
+      }
 
-  async function initDailyPointsRecord() {
-    const today = new Date().toISOString().split("T")[0];
-    const dailyPointRef = ref(db, `users/${currentUID}/dailyPoints/${today}`);
-    const snapshot = await get(dailyPointRef);
-    if (!snapshot.exists()) {
-      await set(dailyPointRef, 0);
-    }
-  }
+      // Pastikan username belum dipakai
+      db.ref('referralCodes/' + username).once('value').then(snap => {
+        if (snap.exists()) {
+          alert('Username sudah dipakai, coba yang lain');
+          return;
+        }
+        auth.createUserWithEmailAndPassword(email, pass).then(cred => {
+          const uid = cred.user.uid;
+          // Simpan user ke database
+          db.ref('users/' + uid).set({
+            email: email,
+            username: username,
+            points: 0,
+            uplineCode: refCode || null,
+            lastChatDay: 0,
+            dailyChatPoints: 0,
+            dailyRefPoints: 0
+          });
+          // Simpan referral code ke uid
+          db.ref('referralCodes/' + username).set(uid);
 
-  function updatePointsDisplay(points) {
-    pointsDisplay.innerText = `Coin Mosso X Anda: ${points.toFixed(4)}`;
-  }
-
-  window.register = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const username = document.getElementById("username").value.trim();
-
-    if (!email || !password || !username) return alert("Semua field harus diisi!");
-
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await set(ref(db, 'users/' + userCred.user.uid), {
-        username,
-        points: 0,
-        dailyPoints: {},
+          alert('Registrasi berhasil. Silakan login.');
+          toggleView('login');
+        }).catch(e => alert(e.message));
       });
-      alert("Berhasil daftar!");
-    } catch (error) {
-      alert("Register error: " + error.message);
-    }
-  };
-
-  window.login = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) return alert("Masukkan email dan password!");
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      alert("Login error: " + error.message);
-    }
-  };
-
-  window.logout = async function () {
-    await signOut(auth);
-    currentUsername = "";
-    currentUID = "";
-    messagesContainer.innerHTML = "";
-    showLogin();
-  };
-
-  async function addDailyPoint() {
-    const today = new Date().toISOString().split("T")[0];
-    const dailyPointRef = ref(db, `users/${currentUID}/dailyPoints/${today}`);
-    const snapshot = await get(dailyPointRef);
-    let currentDailyPoints = 0;
-    if (snapshot.exists()) {
-      currentDailyPoints = snapshot.val();
     }
 
-    if (currentDailyPoints < 0.01) {
-      const pointToAdd = 0.0003;
-      let newDailyPoints = parseFloat((currentDailyPoints + pointToAdd).toFixed(4));
-      if (newDailyPoints > 0.01) {
-        const diff = 0.01 - currentDailyPoints;
-        await updateUserPoints(diff);
-        await set(dailyPointRef, 0.01);
+    function logout() {
+      auth.signOut();
+    }
+
+    // Update UI dan data user setelah login
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('registerSection').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+
+        // Load user data
+        const userSnap = await db.ref('users/' + user.uid).once('value');
+        if (!userSnap.exists()) return;
+
+        const userData = userSnap.val();
+        document.getElementById('usernameDisplay').textContent = userData.username;
+        document.getElementById('userEmail').textContent = userData.email;
+        updateMyPoints(userData.points || 0);
+
+        loadChat();
+        loadDownline(userData.username);
+        loadBonusHistory(user.uid);
+
+        // Reset daily counters if new day
+        const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+        if (userData.lastChatDay !== today) {
+          await db.ref('users/' + user.uid).update({ lastChatDay: today, dailyChatPoints: 0, dailyRefPoints: 0 });
+          chatToday = 0;
+        } else {
+          chatToday = userData.dailyChatPoints || 0;
+        }
       } else {
-        await updateUserPoints(pointToAdd);
-        await set(dailyPointRef, newDailyPoints);
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
       }
-    }
-  }
+    });
 
-  async function updateUserPoints(pointsToAdd) {
-    const userRef = ref(db, 'users/' + currentUID);
-    const snapshot = await get(userRef);
-    if (snapshot.exists()) {
-      const currentPoints = snapshot.val().points || 0;
-      const updatedPoints = parseFloat((currentPoints + pointsToAdd).toFixed(4));
-      await update(userRef, { points: updatedPoints });
-      updatePointsDisplay(updatedPoints);
+    // Update point display
+    function updateMyPoints(points) {
+      document.getElementById('myPoints').textContent = points.toFixed(5);
     }
-  }
 
-  window.sendMessage = async function () {
-    const messageText = document.getElementById("message").value;
-    if (messageText.trim()) {
-      push(messagesRef, {
-        name: currentUsername,
-        text: messageText,
+    // Kirim pesan chat
+    async function sendMessage() {
+      const msg = document.getElementById('messageInput').value.trim();
+      if (!msg) return alert('Tulis pesan dulu.');
+
+      const user = auth.currentUser;
+      if (!user) return alert('Harap login.');
+
+      const userRef = db.ref('users/' + user.uid);
+      const userSnap = await userRef.once('value');
+      if (!userSnap.exists()) return alert('User tidak ditemukan.');
+
+      const userData = userSnap.val();
+
+      // Batasi poin chat harian
+      if (chatToday >= chatLimit) {
+        alert('Batas poin chat harian sudah tercapai.');
+        return;
+      }
+
+      // Tambah pesan ke database
+      const chatRef = db.ref('chat').push();
+      await chatRef.set({
+        uid: user.uid,
+        username: userData.username,
+        message: msg,
         timestamp: Date.now()
       });
-      document.getElementById("message").value = "";
-      await addDailyPoint();
-    }
-  };
 
-  window.withdrawPoints = async function () {
-    const amountInput = document.getElementById("withdraw-amount");
-    const walletInput = document.getElementById("withdraw-wallet");
-    const amount = parseFloat(amountInput.value);
-    const wallet = walletInput.value.trim();
+      // Tambah poin chat user (misal 0.0025 per pesan)
+      const pointPerMessage = 0.0003;
+      let addPoints = pointPerMessage;
 
-    if (!wallet) return alert("Masukkan alamat wallet penarikan!");
-    if (isNaN(amount) || amount <= 0) return alert("Masukkan jumlah penarikan yang valid!");
-    if (amount < 10) return alert("Minimal penarikan adalah 10 Mosso X!");
-
-    const userRef = ref(db, 'users/' + currentUID);
-    const snapshot = await get(userRef);
-    if (!snapshot.exists()) return alert("User tidak ditemukan!");
-    const currentPoints = snapshot.val().points || 0;
-
-    if (amount > currentPoints) return alert("Saldo tidak mencukupi untuk penarikan.");
-
-    const withdrawalRef = ref(db, 'withdrawals');
-    await push(withdrawalRef, {
-      uid: currentUID,
-      username: currentUsername,
-      amount: amount,
-      wallet,
-      timestamp: Date.now(),
-      status: "pending"
-    });
-
-    await update(userRef, { points: parseFloat((currentPoints - amount).toFixed(4)) });
-    updatePointsDisplay(currentPoints - amount);
-
-    const waMessage = `Halo admin, saya ingin menarik ${amount} Mosso X ke alamat wallet: ${wallet}. Username: ${currentUsername}`;
-    const encodedMsg = encodeURIComponent(waMessage);
-    const waURL = `https://wa.me/6285117579009?text=${encodedMsg}`;
-    window.open(waURL, "_blank");
-
-    alert(`Permintaan penarikan ${amount} Mosso X berhasil dikirim. Mohon tunggu proses verifikasi.`);
-    amountInput.value = "";
-    walletInput.value = "";
-  };
-
-  function loadMessages() {
-    messagesContainer.innerHTML = "";
-    onChildAdded(messagesRef, (data) => {
-      const msg = data.val();
-      const msgElem = document.createElement("div");
-      msgElem.classList.add("message");
-      if (msg.name === currentUsername) {
-        msgElem.classList.add("self");
-      } else {
-        msgElem.classList.add("other");
+      if (chatToday + pointPerMessage > chatLimit) {
+        addPoints = chatLimit - chatToday;
       }
-      const time = new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      msgElem.innerHTML = `<div class="meta"><strong>${msg.name}</strong> • ${time}</div>${escapeHtml(msg.text)}`;
-      messagesContainer.appendChild(msgElem);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    });
-  }
 
-  function escapeHtml(text) {
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-</script>
+      const newUserPoints = (userData.points || 0) + addPoints;
+      chatToday += addPoints;
 
+      // Update poin dan daily chat poin user
+      await userRef.update({
+        points: newUserPoints,
+        dailyChatPoints: chatToday
+      });
+
+      updateMyPoints(newUserPoints);
+
+      // Berikan bonus referral multi-level
+      giveReferralBonus(user.uid, userData.username);
+
+      document.getElementById('messageInput').value = '';
+    }
+
+    // Fungsi beri bonus referral multi-level (level 1 dan 2)
+    async function giveReferralBonus(userId, fromUsername) {
+      const levelBonuses = [
+        { level: 1, amount: 0.00015 },
+        { level: 2, amount: 0.00007 }
+      ];
+
+      let currentUid = userId;
+
+      for (const bonusLevel of levelBonuses) {
+        const userSnap = await db.ref('users/' + currentUid).once('value');
+        if (!userSnap.exists()) break;
+
+        const userData = userSnap.val();
+        const uplineCode = userData.uplineCode;
+        if (!uplineCode) break;
+
+        // Dapatkan uid upline dari referralCodes (username)
+        const uplineUidSnap = await db.ref('referralCodes/' + uplineCode).once('value');
+        if (!uplineUidSnap.exists()) break;
+
+        const uplineUid = uplineUidSnap.val();
+        const uplineRef = db.ref('users/' + uplineUid);
+        const uplineDataSnap = await uplineRef.once('value');
+        if (!uplineDataSnap.exists()) break;
+
+        const uplineData = uplineDataSnap.val();
+
+        // Batasi bonus referral harian
+        const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+        let dailyRefPoints = uplineData.dailyRefPoints || 0;
+        let lastRefDay = uplineData.lastRefDay || '';
+
+        if (lastRefDay !== today) {
+          dailyRefPoints = 0;
+        }
+
+        if (dailyRefPoints >= refLimit) break; // Sudah cap hari ini
+
+        // Hitung bonus yang bisa diberikan (jangan melebihi limit)
+        let bonusAmount = bonusLevel.amount;
+        if (dailyRefPoints + bonusAmount > refLimit) {
+          bonusAmount = refLimit - dailyRefPoints;
+        }
+        if (bonusAmount <= 0) break;
+
+        const newPoints = (uplineData.points || 0) + bonusAmount;
+        dailyRefPoints += bonusAmount;
+
+        // Update poin dan daily ref poin upline
+        await uplineRef.update({
+          points: newPoints,
+          dailyRefPoints: dailyRefPoints,
+          lastRefDay: today
+        });
+
+        // Simpan riwayat bonus
+        const bonusHistoryRef = db.ref('bonusHistory').push();
+        await bonusHistoryRef.set({
+          userId: uplineUid,
+          fromUser: fromUsername,
+          points: bonusAmount,
+          level: bonusLevel.level,
+          timestamp: Date.now()
+        });
+
+        currentUid = uplineUid; // naik ke level atas
+      }
+    }
+
+    // Load chat realtime dan tampilkan dengan bubble
+    function loadChat() {
+      const chatBox = document.getElementById('chatBox');
+      chatBox.innerHTML = '';
+
+      db.ref('chat').limitToLast(50).on('child_added', snap => {
+        const data = snap.val();
+        if (!data) return;
+
+        const div = document.createElement('div');
+        div.classList.add('chat-message');
+        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
+
+        if (data.uid === currentUid) {
+          div.classList.add('self');
+        } else {
+          div.classList.add('other');
+        }
+
+        div.innerHTML = `<span class="username">${data.username}</span>${escapeHtml(data.message)}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    }
+
+    // Escape HTML for safety
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m];
+      });
+    }
+
+    // Load downline user (yang pakai username user sebagai uplineCode)
+    function loadDownline(username) {
+      const downlineDiv = document.getElementById('downlineList');
+      downlineDiv.innerHTML = 'Memuat...';
+
+      db.ref('users').orderByChild('uplineCode').equalTo(username).once('value', snap => {
+        if (!snap.exists()) {
+          downlineDiv.innerHTML = 'Tidak ada downline.';
+          return;
+        }
+        let html = '';
+        snap.forEach(childSnap => {
+          const u = childSnap.val();
+          html += `<div class="list-item">${u.username} (Poin: ${ (u.points || 0).toFixed(5) })</div>`;
+        });
+        downlineDiv.innerHTML = html;
+      });
+    }
+
+    // Load riwayat bonus user
+    function loadBonusHistory(uid) {
+      const bonusDiv = document.getElementById('bonusHistory');
+      bonusDiv.innerHTML = 'Memuat...';
+
+      db.ref('bonusHistory').orderByChild('userId').equalTo(uid).limitToLast(30).once('value', snap => {
+        if (!snap.exists()) {
+          bonusDiv.innerHTML = 'Belum ada riwayat bonus.';
+          return;
+        }
+        let html = '';
+        snap.forEach(childSnap => {
+          const b = childSnap.val();
+          const date = new Date(b.timestamp);
+          html += `<div class="list-item">+${b.points.toFixed(5)} (Level ${b.level}) dari <b>${b.fromUser}</b> pada ${date.toLocaleString()}</div>`;
+        });
+        bonusDiv.innerHTML = html;
+      });
+    }
+
+    // Ajukan penarikan via WA
+    function requestWithdraw() {
+      const name = document.getElementById('withdrawName').value.trim();
+      const username = document.getElementById('withdrawUser').value.trim();
+      const wallet = document.getElementById('withdrawWallet').value.trim();
+      const user = auth.currentUser;
+
+      if (!name || !username || !wallet) {
+        alert('Semua data penarikan harus diisi.');
+        return;
+      }
+      if (!user) {
+        alert('Harap login terlebih dahulu.');
+        return;
+      }
+
+      db.ref('users/' + user.uid).once('value').then(snap => {
+        if (!snap.exists()) return alert('User tidak ditemukan.');
+
+        const points = snap.val().points || 0;
+        if (points < 10) {
+          alert('Minimal penarikan 10 coin.');
+          return;
+        }
+
+        // Format pesan WA
+        const waMessage = 
+          `Halo admin, saya ingin melakukan penarikan:\n` +
+          `Nama: ${name}\n` +
+          `Username: ${username}\n` +
+          `Wallet: ${wallet}\n` +
+          `Saldo saat ini: ${points.toFixed(5)} Mosso X Coin\n` +
+          `Mohon proses penarikannya. Terima kasih!`;
+
+        // Nomor WA admin kamu (ganti sesuai)
+        const waNumber = '6285117579009'; // contoh nomor Indonesia +62xxx
+
+        // Encode pesan
+        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+
+        // Reset poin user (anggap sudah ajukan, untuk hindari double withdraw)
+        db.ref('users/' + user.uid).update({ points: 0 });
+
+        // Buka WA
+        window.open(waUrl, '_blank');
+      });
+    }
+  </script>
 </body>
 </html>
