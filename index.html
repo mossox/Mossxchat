@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <title>Mosso X Chat</title>
+  <title>Aplikasi Referral</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: #0f1219;
-      margin: 0; padding: 20px;
+      margin: 0;
+      padding: 20px;
       color: #0ff;
       text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
     }
+
     .container {
       max-width: 500px;
       margin: auto;
@@ -23,6 +26,7 @@
       border-radius: 15px;
       box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff;
     }
+
     .box {
       background: #111622;
       padding: 20px;
@@ -30,7 +34,9 @@
       border-radius: 10px;
       box-shadow: 0 0 8px #0ff;
     }
-    input, button {
+
+    input,
+    button {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
@@ -43,10 +49,12 @@
       text-shadow: none;
       box-shadow: 0 0 8px #0ff inset;
     }
+
     input::placeholder {
       color: #0ff;
       opacity: 0.6;
     }
+
     button {
       background: #00ffff;
       color: #001f27;
@@ -55,10 +63,12 @@
       box-shadow: 0 0 15px #00ffff;
       transition: background 0.3s ease;
     }
+
     button:hover {
       background: #33ffff;
       box-shadow: 0 0 25px #33ffff;
     }
+
     .chat-box {
       height: 200px;
       overflow-y: auto;
@@ -70,23 +80,35 @@
       font-size: 14px;
       color: #0ff;
     }
+
     .link {
       color: #00ffff;
       cursor: pointer;
       text-decoration: underline;
     }
+
     .list-item {
       padding: 5px 0;
       border-bottom: 1px solid #033;
     }
-    #dashboard, #registerSection {
+
+    #dashboard,
+    #registerSection {
       display: none;
     }
-    @media(max-width:600px){
-      body { padding:10px; }
-      .container { width:100%; padding:0; }
+
+    @media(max-width:600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        width: 100%;
+        padding: 0;
+      }
     }
 
+    /* Chat bubbles WA style */
     .chat-message {
       margin: 8px 0;
       max-width: 75%;
@@ -96,29 +118,31 @@
       font-size: 14px;
       line-height: 1.3;
       word-wrap: break-word;
-      clear: both;
     }
+
     .chat-message.self {
       background: #00ff62;
       color: #001f27;
       margin-left: auto;
       border-bottom-right-radius: 2px;
       box-shadow: 0 0 10px #00ffff;
-      float: right;
     }
+
     .chat-message.other {
       background: #0ff;
       color: #003333;
       margin-right: auto;
       border-bottom-left-radius: 2px;
       box-shadow: 0 0 10px #0ff;
-      float: left;
     }
+
     .chat-message .username {
       font-weight: bold;
       display: block;
       margin-bottom: 3px;
     }
+
+    /* Blink warning */
     .blink-warning {
       color: yellow;
       font-weight: bold;
@@ -126,12 +150,23 @@
       text-shadow: 0 0 8px yellow;
       margin-top: 8px;
     }
+
     @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
+
+      0%,
+      50%,
+      100% {
+        opacity: 1;
+      }
+
+      25%,
+      75% {
+        opacity: 0;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div id="loginSection" class="box">
@@ -153,8 +188,8 @@
     </div>
 
     <div id="dashboard" class="box">
-      <h3>Silakan mulai mengobrol dan kumpulkan Mosso X Coin</h3>
-      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>!</p>
+      <h2>Dashboard</h2>
+      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>! 👋</p>
       <p>Email: <span id="userEmail"></span></p>
       <p>Coin Mosso X Saya: <b><span id="myPoints">0</span></b></p>
       <button onclick="logout()">Logout</button>
@@ -171,10 +206,10 @@
         <input id="withdrawName" placeholder="Nama lengkap" />
         <input id="withdrawUser" placeholder="Username" />
         <input id="withdrawWallet" placeholder="Alamat Wallet" />
-        <input id="Jumlahpenarikan" placeholder="Jumlah Penarikan" />
-        <button onclick="sendWithdrawToWA()">Ajukan Penarikan</button>
+        <input id="withdrawAmount" type="number" placeholder="Jumlah Poin Yang Akan Ditarik" />
+        <button onclick="requestWithdraw()">Ajukan Penarikan</button>
         <p id="withdrawWarning" class="blink-warning" style="display:none;">
-          ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
+          ⚠️ Pastikan alamat wallet dan jumlah penarikan sudah benar. Penarikan tidak dapat dibatalkan.
         </p>
       </div>
 
@@ -213,29 +248,43 @@
     function login() {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPassword').value;
-      auth.signInWithEmailAndPassword(email, pass)
-        .then(() => location.reload())
-        .catch(e => alert('Login gagal: ' + e.message));
+      auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
     }
 
     function register() {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPassword').value;
       const username = document.getElementById('regUsername').value.trim();
-      const ref = document.getElementById('refCode').value.trim();
-      if (!username) return alert('Username harus diisi');
+      const refCode = document.getElementById('refCode').value.trim();
+      if (!username) return alert("Username wajib diisi!");
 
-      auth.createUserWithEmailAndPassword(email, pass).then(cred => {
-        db.ref('users/' + cred.user.uid).set({
-          email, username, ref, points: 0
-        });
-        alert('Pendaftaran berhasil');
-        location.reload();
-      }).catch(e => alert('Gagal daftar: ' + e.message));
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(cred => {
+          const uid = cred.user.uid;
+          db.ref("users/" + uid).set({
+            email,
+            username,
+            referralCode: username,
+            uplineCode: refCode || null,
+            points: 0,
+            level: 1 // Tambahkan level pengguna
+          });
+          db.ref("referralCodes/" + username).set(uid);
+          // Tambahkan user ke upline nya
+          if (refCode) {
+            db.ref("referralCodes/" + refCode).once("value").then(snap => {
+              const uplineId = snap.val();
+              if (uplineId) {
+                db.ref("users/" + uplineId + "/downlines/" + uid).set(true);
+              }
+            })
+          }
+        })
+        .catch(err => alert(err.message));
     }
 
     function logout() {
-      auth.signOut().then(() => location.reload());
+      auth.signOut();
     }
 
     auth.onAuthStateChanged(user => {
@@ -243,92 +292,353 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('registerSection').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-        db.ref('users/' + user.uid).on('value', snap => {
-          const val = snap.val();
-          document.getElementById('userEmail').innerText = val.email;
-          document.getElementById('usernameDisplay').innerText = val.username || 'Pengguna';
-          document.getElementById('myPoints').innerText = val.points || 0;
+        document.getElementById('userEmail').textContent = user.email;
+
+        const uid = user.uid;
+        const userRef = db.ref("users/" + uid);
+        userRef.on("value", snap => {
+          const data = snap.val();
+          if (data) {
+            document.getElementById("myPoints").textContent = (data.points || 0).toFixed(5);
+            document.getElementById("usernameDisplay").textContent = data.username || "Pengguna";
+            loadDownlines(data.referralCode);
+            loadBonusHistory(uid);
+          }
         });
+
+        db.ref("chat").off(); // Unsubscribe before resubscribing to prevent duplicates
+        db.ref("chat").on("child_added", snap => {
+          const msg = snap.val();
+          if (msg) addChatMessage(msg);
+        });
+      } else {
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('registerSection').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
       }
     });
 
-    function sendMessage() {
-      const msg = document.getElementById('messageInput').value.trim();
-      if (!msg) return;
-      const user = auth.currentUser;
-      if (!user) return alert("Silakan login terlebih dahulu");
-      db.ref('users/' + user.uid).once('value').then(snap => {
-        const username = snap.val().username || "Anonim";
-        const timestamp = new Date().getTime();
-        db.ref('messages').push({ text: msg, uid: user.uid, username, timestamp });
-        chatToday++;
-        if (chatToday <= 10) {
-          const bonus = chatLimit;
-          db.ref('users/' + user.uid + '/points').transaction(p => (p || 0) + bonus);
-        }
-        document.getElementById('messageInput').value = '';
-      });
+    function addChatMessage(msg) {
+      const chatBox = document.getElementById("chatBox");
+      const div = document.createElement("div");
+      div.classList.add("chat-message");
+      if (auth.currentUser && msg.uid === auth.currentUser.uid) {
+        div.classList.add("self");
+      } else {
+        div.classList.add("other");
+      }
+      div.innerHTML = `<span class="username">${msg.username}:</span> ${msg.text}`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    db.ref('messages').on('value', snap => {
-      const box = document.getElementById('chatBox');
-      box.innerHTML = '';
-      snap.forEach(s => {
-        const data = s.val();
-        const div = document.createElement('div');
-        div.className = 'chat-message ' + (data.uid === auth.currentUser?.uid ? 'self' : 'other');
-        div.innerHTML = `<span class="username">${data.username}:</span> ${data.text}`;
-        box.appendChild(div);
-      });
-      box.scrollTop = box.scrollHeight;
-    });
+    function sendMessage() {
+      const msgInput = document.getElementById("messageInput");
+      const text = msgInput.value.trim();
+      if (!text) return;
 
-    function sendWithdrawToWA() {
-      const name = document.getElementById("withdrawName").value.trim();
-      const username = document.getElementById("withdrawUser").value.trim();
-      const wallet = document.getElementById("withdrawWallet").value.trim();
-      const amount = document.getElementById("Jumlahpenarikan").value.trim();
-
-      if (!name || !username || !wallet || !amount) {
-        alert("Semua kolom harus diisi.");
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Silakan login dulu");
         return;
       }
 
-      if (isNaN(amount) || parseFloat(amount) <= 0) {
-        alert("Jumlah penarikan harus berupa angka yang valid.");
+      // Batasi chat per hari dan poin yang diberikan
+      if (chatToday >= chatLimit) {
+        alert("Batas poin chat hari ini sudah tercapai.");
+        return;
+      }
+
+      db.ref("users/" + user.uid).once("value").then(snap => {
+        const points = snap.val()?.points || 0;
+        const username = snap.val()?.username || "User";
+        const userLevel = snap.val()?.level || 1; //ambil level user
+        let uplineId = snap.val()?.uplineCode || null; //ambil upline
+
+        const chatRef = db.ref("chat").push();
+        chatRef.set({
+          uid: user.uid,
+          username,
+          text,
+          timestamp: Date.now()
+        }).then(() => {
+          // Tambah poin chat
+          chatToday += 0.0003;
+          db.ref("users/" + user.uid + "/points").set(points + 0.0003);
+          msgInput.value = "";
+
+          // Beri bonus ke upline level 1 dan 2
+          if (uplineId) {
+            db.ref("referralCodes/" + uplineId).once("value").then(snapUpline1 => {
+              const upline1Id = snapUpline1.val();
+              if (upline1Id) {
+                db.ref("users/" + upline1Id).once("value").then(snapUpline1Data => {
+                  const upline1Data = snapUpline1Data.val();
+                  const upline1Points = upline1Data.points || 0;
+                  db.ref("users/" + upline1Id + "/points").set(upline1Points + 0.00015);
+
+                  // Tambahkan catatan bonus untuk upline 1
+                  const bonusRef1 = db.ref("bonusHistory/" + upline1Id).push();
+                  bonusRef1.set({
+                    date: new Date().toLocaleDateString(),
+                    amount: 0.00015,
+                    from: username,
+                    level: userLevel
+                  });
+
+                  // Cari upline level 2 dari upline level 1
+                  const upline1UplineCode = snapUpline1Data.uplineCode;
+                  if (upline1UplineCode) {
+                    db.ref("referralCodes/" + upline1UplineCode).once("value").then(snapUpline2Id => {
+                      const upline2Id = snapUpline2Id.val();
+                      if (upline2Id) {
+                        db.ref("users/" + upline2Id).once("value").then(snapUpline2Data => {
+                          const upline2Data = snapUpline2Data.val();
+                          const upline2Points = upline2Data.points || 0;
+                          db.ref("users/" + upline2Id + "/points").set(upline2Points + 0.00015);
+
+                          // Tambahkan catatan bonus untuk upline 2
+                          const bonusRef2 = db.ref("bonusHistory/" + upline2Id).push();
+                          bonusRef2.set({
+                            date: new Date().toLocaleDateString(),
+                            amount: 0.00007,
+                            from: username,
+                            level: userLevel
+                          });
+                        });
+                      }
+                    });
+                  }
+                })
+              }
+            })
+          }
+        });
+      });
+    }
+
+    // Penarikan dengan validasi minimal 10 poin dan warning blink kuning
+    function requestWithdraw() {
+      const nama = document.getElementById('withdrawName').value.trim();
+      const username = document.getElementById('withdrawUser').value.trim();
+      const wallet = document.getElementById('withdrawWallet').value.trim();
+      const amount = document.getElementById('withdrawAmount').value.trim();
+      const warningEl = document.getElementById('withdrawWarning');
+
+      if (!nama || !username || !wallet || !amount) {
+        alert("Isi semua data penarikan terlebih dahulu.");
         return;
       }
 
       const user = auth.currentUser;
       if (!user) {
-        alert('Harap login terlebih dahulu.');
+        alert("Silakan login dulu.");
         return;
       }
 
-      db.ref('users/' + user.uid).once('value').then(snap => {
-        if (!snap.exists()) return alert('User tidak ditemukan.');
+      db.ref("users/" + user.uid).once("value").then(snap => {
+        const points = snap.val()?.points || 0;
+        if (parseFloat(amount) > points) {
+          alert("Jumlah penarikan melebihi jumlah poin Anda.");
+          return;
+        }
+        if (parseFloat(amount) < 10) {
+          warningEl.style.display = 'block';
+          warningEl.textContent = "⚠️ Jumlah penarikan minimal 10 poin."; // Ubah teks peringatan
+          return;
+        } else {
+          warningEl.style.display = 'none';
+        }
 
-        const points = snap.val().points || 0;
-        if (points < 10) {
-          alert('Minimal penarikan 10 coin.');
+        const email = user.email;
+        const text = `*Permintaan Penarikan*\nNama: ${nama}\nUsername: ${username}\nWallet: ${wallet}\nJumlah: ${amount}\nEmail: ${email}\nPoin: ${points.toFixed(5)}`;
+        const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, "_blank");
+
+        // Kurangkan poin dari user
+        db.ref("users/" + user.uid + "/points").set(points - parseFloat(amount));
+
+        // Simpan riwayat penarikan (opsional, tergantung kebutuhan)
+        const withdrawRef = db.ref("withdrawHistory/" + user.uid).push();
+        withdrawRef.set({
+          nama: nama,
+          username: username,
+          wallet: wallet,
+          amount: amount,
+          timestamp: Date.now()
+        });
+      });
+    }
+
+    function loadDownlines(referralCode) {
+      if (!referralCode) {
+        document.getElementById('downlineList').textContent = 'Tidak ada referral.';
+        return;
+      }
+
+      db.ref("users").orderByChild("uplineCode").equalTo(referralCode).once("value").then(snap => {
+        const val = snap.val();
+        const container = document.getElementById('downlineList');
+        container.innerHTML = "";
+        if (!val) {
+          container.textContent = 'Tidak ada referral.';
           return;
         }
 
-        const message = `Halo Admin Mosso X Chat, saya ingin melakukan penarikan:\n\n` +
-          `👤 Nama: ${name}\n` +
-          `🆔 Username: ${username}\n` +
-          `💰 Jumlah Penarikan: ${amount} poin\n` +
-          `🏦 Alamat Wallet: ${wallet}\n\n` +
-          `Mohon segera diproses. Terima kasih 🙏`;
+        let downlineCount = 0;
+        let totalPoints = 0; // Untuk menyimpan total poin downline
 
-        const waNumber = '6285117579009';
-        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+        Object.entries(val).forEach(([key, user]) => {
+          downlineCount++;
+          totalPoints += user.points || 0; // Tambahkan poin user ke total
 
-        db.ref('users/' + user.uid).update({ points: 0 });
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.textContent = `${user.username || 'User'} - Level: ${user.level} - Poin: ${user.points.toFixed(5) || 0}`;
+          container.appendChild(div);
+        });
 
-        document.getElementById('withdrawWarning').style.display = 'block';
-        window.open(waUrl, '_blank');
+        // Tampilkan total downline dan total poin
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'list-item';
+        summaryDiv.innerHTML = `<b>Total Downline: ${downlineCount}</b><br><b>Total Poin Downline: ${totalPoints.toFixed(5)}</b>`;
+        container.appendChild(summaryDiv);
       });
+    }
+
+
+    function loadBonusHistory(uid) {
+      db.ref("bonusHistory/" + uid).once("value").then(snap => {
+        const val = snap.val();
+        const container = document.getElementById('bonusHistory');
+        container.innerHTML = "";
+        if (!val) {
+          container.textContent = "Belum ada bonus.";
+          return;
+        }
+        Object.values(val).forEach(bonus => {
+          const div = document.createElement("div");
+          div.className = 'list-item';
+          div.textContent = `${bonus.date} - ${bonus.amount} poin dari ${bonus.from}`;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    // Fungsi untuk memberikan bonus referral
+    function distributeReferralBonus(uplineId, level, referrerUsername) {
+      if (!uplineId) return;
+
+      const bonus = level === 1 ? 0.000015 : level === 2 ? 0.00007 : 0; // Contoh bonus, bisa diubah
+      if (bonus === 0) return;
+
+      db.ref("users/" + uplineId).once("value").then(snap => {
+        const uplineData = snap.val();
+        if (uplineData) {
+          const currentPoints = uplineData.points || 0;
+          const newPoints = currentPoints + bonus;
+
+          db.ref("users/" + uplineId + "/points").set(newPoints).then(() => {
+            // Tambahkan catatan bonus
+            const bonusRef = db.ref("bonusHistory/" + uplineId).push();
+            bonusRef.set({
+              date: new Date().toLocaleDateString(),
+              amount: bonus,
+              from: referrerUsername,
+              level: level
+            });
+          });
+        }
+      });
+    }
+
+    // Fungsi yang dipanggil saat pendaftaran user baru
+    function register() {
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPassword').value;
+      const username = document.getElementById('regUsername').value.trim();
+      const refCode = document.getElementById('refCode').value.trim();
+      if (!username) return alert("Username wajib diisi!");
+
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(cred => {
+          const uid = cred.user.uid;
+          let uplineId = null;
+          let uplineUsername = null;
+
+          // Dapatkan upline ID jika ada
+          if (refCode) {
+            db.ref("referralCodes/" + refCode).once("value").then(snap => {
+              uplineId = snap.val();
+              if (uplineId) {
+                // Ambil username upline
+                db.ref("users/" + uplineId).once("value").then(snapUpline => {
+                  uplineUsername = snapUpline.val().username;
+                  // Set data user baru
+                  db.ref("users/" + uid).set({
+                    email,
+                    username,
+                    referralCode: username,
+                    uplineCode: refCode || null,
+                    points: 0,
+                    level: 1 // Tambahkan level pengguna
+                  });
+                  db.ref("referralCodes/" + username).set(uid);
+
+                  // Tambahkan user ke downline upline level 1
+                  db.ref("users/" + uplineId + "/downlines/" + uid).set(true).then(() => {
+                    // Berikan bonus ke upline level 1
+                    distributeReferralBonus(uplineId, 1, username);
+
+                    // Cari upline level 2
+                    db.ref("users/" + uplineId).once("value").then(snapUplineLevel1 => {
+                      const uplineLevel1Data = snapUplineLevel1.val();
+                      if (uplineLevel1Data.uplineCode) {
+                        db.ref("referralCodes/" + uplineLevel1Data.uplineCode).once("value").then(snapUplineLevel2Id => {
+                          const uplineLevel2Id = snapUplineLevel2Id.val();
+                          if (uplineLevel2Id) {
+                            db.ref("users/" + uplineLevel2Id).once("value").then(snapUplineLevel2Data => {
+                              const uplineLevel2Username = snapUplineLevel2Data.val().username;
+                              // Tambahkan user ke downline upline level 2
+                              db.ref("users/" + uplineLevel2Id + "/downlines/" + uid).set(true).then(() => {
+                                // Berikan bonus ke upline level 2
+                                distributeReferralBonus(uplineLevel1Id, 1, username);
+                              })
+                            })
+                          }
+                        })
+                      }
+                    });
+                  });
+                })
+
+              } else {
+                // Set data user baru
+                db.ref("users/" + uid).set({
+                  email,
+                  username,
+                  referralCode: username,
+                  uplineCode: refCode || null,
+                  points: 0,
+                  level: 1 //Tambahkan level pengguna
+                });
+                db.ref("referralCodes/" + username).set(uid);
+              }
+            });
+          } else {
+            // Set data user baru
+            db.ref("users/" + uid).set({
+              email,
+              username,
+              referralCode: username,
+              uplineCode: refCode || null,
+              points: 0,
+              level: 1 // Tambahkan level pengguna
+            });
+            db.ref("referralCodes/" + username).set(uid);
+          }
+        })
+        .catch(err => alert(err.message));
     }
   </script>
 </body>
