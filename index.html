@@ -190,6 +190,7 @@
         <input id="withdrawName" placeholder="Nama lengkap" />
         <input id="withdrawUser" placeholder="Username" />
         <input id="withdrawWallet" placeholder="Alamat Wallet" />
+        <input id="Jumlahpenarikan" placeholder="Jumlah Penarikan" />
         <button onclick="requestWithdraw()">Ajukan Penarikan</button>
         <p id="withdrawWarning" class="blink-warning" style="display:none;">
           <div id="withdraw-warning">
@@ -523,16 +524,16 @@
     }
 
     // Ajukan penarikan via WA
-    function requestWithdraw() {
-      const name = document.getElementById('withdrawName').value.trim();
-      const username = document.getElementById('withdrawUser').value.trim();
-      const wallet = document.getElementById('withdrawWallet').value.trim();
-      const user = auth.currentUser;
+    function sendWithdrawToWA() {
+  const name = document.getElementById("withdrawName").value.trim();
+  const username = document.getElementById("withdrawUser").value.trim();
+  const wallet = document.getElementById("withdrawWallet").value.trim();
+  const amount = document.getElementById("Jumlahpenarikan").value.trim();
 
-      if (!name || !username || !wallet) {
-        alert('Semua data penarikan harus diisi.');
-        return;
-      }
+  if (!name || !username || !wallet || !amount) {
+    alert("Semua kolom harus diisi.");
+    return;
+  }
       if (!user) {
         alert('Harap login terlebih dahulu.');
         return;
@@ -548,13 +549,12 @@
         }
 
         // Format pesan WA
-        const waMessage = 
-          `Halo admin, saya ingin melakukan penarikan:\n` +
-          `Nama: ${name}\n` +
-          `Username: ${username}\n` +
-          `Wallet: ${wallet}\n` +
-          `Saldo saat ini: ${points.toFixed(5)} Mosso X Coin\n` +
-          `Mohon proses penarikannya. Terima kasih!`;
+        const message = `Halo Admin Mosso X Chat, saya ingin melakukan penarikan:\n\n` +
+    `👤 Nama: ${name}\n` +
+    `🆔 Username: ${username}\n` +
+    `💰 Jumlah Penarikan: ${amount} poin\n` +
+    `🏦 Alamat Wallet: ${wallet}\n\n` +
+    `Mohon segera diproses. Terima kasih 🙏`;
 
         // Nomor WA admin kamu (ganti sesuai)
         const waNumber = '6285117579009'; // contoh nomor Indonesia +62xxx
