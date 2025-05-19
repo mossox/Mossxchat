@@ -13,11 +13,7 @@
       background: #0f1219;
       margin: 0; padding: 20px;
       color: #0ff;
-      text-shadow:
-        0 0 5px #0ff,
-        0 0 10px #0ff,
-        0 0 20px #0ff,
-        0 0 40px #0ff;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
     }
     .container {
       max-width: 500px;
@@ -25,17 +21,14 @@
       background: #111622;
       padding: 20px;
       border-radius: 15px;
-      box-shadow:
-        0 0 10px #0ff,
-        inset 0 0 10px #0ff;
+      box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff;
     }
     .box {
       background: #111622;
       padding: 20px;
       margin-bottom: 20px;
       border-radius: 10px;
-      box-shadow:
-        0 0 8px #0ff;
+      box-shadow: 0 0 8px #0ff;
     }
     input, button {
       width: 100%;
@@ -48,8 +41,7 @@
       background: #00121a;
       color: #0ff;
       text-shadow: none;
-      box-shadow:
-        0 0 8px #0ff inset;
+      box-shadow: 0 0 8px #0ff inset;
     }
     input::placeholder {
       color: #0ff;
@@ -60,14 +52,12 @@
       color: #001f27;
       cursor: pointer;
       font-weight: bold;
-      box-shadow:
-        0 0 15px #00ffff;
+      box-shadow: 0 0 15px #00ffff;
       transition: background 0.3s ease;
     }
     button:hover {
       background: #33ffff;
-      box-shadow:
-        0 0 25px #33ffff;
+      box-shadow: 0 0 25px #33ffff;
     }
     .chat-box {
       height: 200px;
@@ -97,7 +87,6 @@
       .container { width:100%; padding:0; }
     }
 
-    /* Chat bubbles WA style */
     .chat-message {
       margin: 8px 0;
       max-width: 75%;
@@ -114,8 +103,7 @@
       color: #001f27;
       margin-left: auto;
       border-bottom-right-radius: 2px;
-      box-shadow:
-        0 0 10px #00ffff;
+      box-shadow: 0 0 10px #00ffff;
       float: right;
     }
     .chat-message.other {
@@ -123,8 +111,7 @@
       color: #003333;
       margin-right: auto;
       border-bottom-left-radius: 2px;
-      box-shadow:
-        0 0 10px #0ff;
+      box-shadow: 0 0 10px #0ff;
       float: left;
     }
     .chat-message .username {
@@ -132,8 +119,6 @@
       display: block;
       margin-bottom: 3px;
     }
-
-    /* Blink warning */
     .blink-warning {
       color: yellow;
       font-weight: bold;
@@ -141,7 +126,6 @@
       text-shadow: 0 0 8px yellow;
       margin-top: 8px;
     }
-
     @keyframes blink {
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0; }
@@ -150,7 +134,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Login -->
     <div id="loginSection" class="box">
       <h2>Login</h2>
       <input type="email" id="loginEmail" placeholder="Email" />
@@ -159,7 +142,6 @@
       <p>Belum punya akun? <span class="link" onclick="toggleView('register')">Daftar di sini</span></p>
     </div>
 
-    <!-- Register -->
     <div id="registerSection" class="box">
       <h2>Register</h2>
       <input type="email" id="regEmail" placeholder="Email" />
@@ -170,10 +152,9 @@
       <p>Sudah punya akun? <span class="link" onclick="toggleView('login')">Login di sini</span></p>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard" class="box">
       <h3>Silakan mulai mengobrol dan kumpulkan Mosso X Coin</h3>
-      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>! 👋</p>
+      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>!</p>
       <p>Email: <span id="userEmail"></span></p>
       <p>Coin Mosso X Saya: <b><span id="myPoints">0</span></b></p>
       <button onclick="logout()">Logout</button>
@@ -191,11 +172,9 @@
         <input id="withdrawUser" placeholder="Username" />
         <input id="withdrawWallet" placeholder="Alamat Wallet" />
         <input id="Jumlahpenarikan" placeholder="Jumlah Penarikan" />
-        <button onclick="requestWithdraw()">Ajukan Penarikan</button>
+        <button onclick="sendWithdrawToWA()">Ajukan Penarikan</button>
         <p id="withdrawWarning" class="blink-warning" style="display:none;">
-          <div id="withdraw-warning">
-            ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
-          </div>
+          ⚠️ Pastikan alamat wallet sudah benar. Penarikan tidak dapat dibatalkan.
         </p>
       </div>
 
@@ -223,8 +202,8 @@
     const auth = firebase.auth();
 
     let chatToday = 0;
-    const chatLimit = 0.02;  // max poin chat per hari
-    const refLimit = 0.05;   // max bonus referral per hari
+    const chatLimit = 0.02;
+    const refLimit = 0.05;
 
     function toggleView(view) {
       document.getElementById('loginSection').style.display = (view === 'login') ? 'block' : 'none';
@@ -234,306 +213,93 @@
     function login() {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPassword').value;
-      auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => location.reload())
+        .catch(e => alert('Login gagal: ' + e.message));
     }
 
     function register() {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPassword').value;
       const username = document.getElementById('regUsername').value.trim();
-      const refCode = document.getElementById('refCode').value.trim();
+      const ref = document.getElementById('refCode').value.trim();
+      if (!username) return alert('Username harus diisi');
 
-      if (!username.match(/^[a-zA-Z0-9_]+$/)) {
-        alert('Username hanya boleh huruf, angka dan underscore');
-        return;
-      }
-      if (!email || !pass || !username) {
-        alert('Email, password dan username harus diisi');
-        return;
-      }
-
-      // Pastikan username belum dipakai
-      db.ref('referralCodes/' + username).once('value').then(snap => {
-        if (snap.exists()) {
-          alert('Username sudah dipakai, coba yang lain');
-          return;
-        }
-        auth.createUserWithEmailAndPassword(email, pass).then(cred => {
-          const uid = cred.user.uid;
-          // Simpan user ke database
-          db.ref('users/' + uid).set({
-            email: email,
-            username: username,
-            points: 0,
-            uplineCode: refCode || null,
-            lastChatDay: 0,
-            dailyChatPoints: 0,
-            dailyRefPoints: 0
-          });
-          // Simpan referral code ke uid
-          db.ref('referralCodes/' + username).set(uid);
-
-          alert('Registrasi berhasil. Silakan login.');
-          toggleView('login');
-        }).catch(e => alert(e.message));
-      });
+      auth.createUserWithEmailAndPassword(email, pass).then(cred => {
+        db.ref('users/' + cred.user.uid).set({
+          email, username, ref, points: 0
+        });
+        alert('Pendaftaran berhasil');
+        location.reload();
+      }).catch(e => alert('Gagal daftar: ' + e.message));
     }
 
     function logout() {
-      auth.signOut();
+      auth.signOut().then(() => location.reload());
     }
 
-    // Update UI dan data user setelah login
-    auth.onAuthStateChanged(async user => {
+    auth.onAuthStateChanged(user => {
       if (user) {
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('registerSection').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-
-        // Load user data
-        const userSnap = await db.ref('users/' + user.uid).once('value');
-        if (!userSnap.exists()) return;
-
-        const userData = userSnap.val();
-        document.getElementById('usernameDisplay').textContent = userData.username;
-        document.getElementById('userEmail').textContent = userData.email;
-        updateMyPoints(userData.points || 0);
-
-        loadChat();
-        loadDownline(userData.username);
-        loadBonusHistory(user.uid);
-
-        // Reset daily counters if new day
-        const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
-        if (userData.lastChatDay !== today) {
-          await db.ref('users/' + user.uid).update({ lastChatDay: today, dailyChatPoints: 0, dailyRefPoints: 0 });
-          chatToday = 0;
-        } else {
-          chatToday = userData.dailyChatPoints || 0;
-        }
-      } else {
-        document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'block';
+        db.ref('users/' + user.uid).on('value', snap => {
+          const val = snap.val();
+          document.getElementById('userEmail').innerText = val.email;
+          document.getElementById('usernameDisplay').innerText = val.username || 'Pengguna';
+          document.getElementById('myPoints').innerText = val.points || 0;
+        });
       }
     });
 
-    // Update point display
-    function updateMyPoints(points) {
-      document.getElementById('myPoints').textContent = points.toFixed(5);
+    function sendMessage() {
+      const msg = document.getElementById('messageInput').value.trim();
+      if (!msg) return;
+      const user = auth.currentUser;
+      if (!user) return alert("Silakan login terlebih dahulu");
+      db.ref('users/' + user.uid).once('value').then(snap => {
+        const username = snap.val().username || "Anonim";
+        const timestamp = new Date().getTime();
+        db.ref('messages').push({ text: msg, uid: user.uid, username, timestamp });
+        chatToday++;
+        if (chatToday <= 10) {
+          const bonus = chatLimit;
+          db.ref('users/' + user.uid + '/points').transaction(p => (p || 0) + bonus);
+        }
+        document.getElementById('messageInput').value = '';
+      });
     }
 
-    // Kirim pesan chat
-    async function sendMessage() {
-      const msg = document.getElementById('messageInput').value.trim();
-      if (!msg) return alert('Tulis pesan dulu.');
+    db.ref('messages').on('value', snap => {
+      const box = document.getElementById('chatBox');
+      box.innerHTML = '';
+      snap.forEach(s => {
+        const data = s.val();
+        const div = document.createElement('div');
+        div.className = 'chat-message ' + (data.uid === auth.currentUser?.uid ? 'self' : 'other');
+        div.innerHTML = `<span class="username">${data.username}:</span> ${data.text}`;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    });
 
-      const user = auth.currentUser;
-      if (!user) return alert('Harap login.');
+    function sendWithdrawToWA() {
+      const name = document.getElementById("withdrawName").value.trim();
+      const username = document.getElementById("withdrawUser").value.trim();
+      const wallet = document.getElementById("withdrawWallet").value.trim();
+      const amount = document.getElementById("Jumlahpenarikan").value.trim();
 
-      const userRef = db.ref('users/' + user.uid);
-      const userSnap = await userRef.once('value');
-      if (!userSnap.exists()) return alert('User tidak ditemukan.');
-
-      const userData = userSnap.val();
-
-      // Batasi poin chat harian
-      if (chatToday >= chatLimit) {
-        alert('Batas poin chat harian sudah tercapai.');
+      if (!name || !username || !wallet || !amount) {
+        alert("Semua kolom harus diisi.");
         return;
       }
 
-      // Tambah pesan ke database
-      const chatRef = db.ref('chat').push();
-      await chatRef.set({
-        uid: user.uid,
-        username: userData.username,
-        message: msg,
-        timestamp: Date.now()
-      });
-
-      // Tambah poin chat user (misal 0.0025 per pesan)
-      const pointPerMessage = 0.0003;
-      let addPoints = pointPerMessage;
-
-      if (chatToday + pointPerMessage > chatLimit) {
-        addPoints = chatLimit - chatToday;
+      if (isNaN(amount) || parseFloat(amount) <= 0) {
+        alert("Jumlah penarikan harus berupa angka yang valid.");
+        return;
       }
 
-      const newUserPoints = (userData.points || 0) + addPoints;
-      chatToday += addPoints;
-
-      // Update poin dan daily chat poin user
-      await userRef.update({
-        points: newUserPoints,
-        dailyChatPoints: chatToday
-      });
-
-      updateMyPoints(newUserPoints);
-
-      // Berikan bonus referral multi-level
-      giveReferralBonus(user.uid, userData.username);
-
-      document.getElementById('messageInput').value = '';
-    }
-
-    // Fungsi beri bonus referral multi-level (level 1 dan 2)
-    async function giveReferralBonus(userId, fromUsername) {
-      const levelBonuses = [
-        { level: 1, amount: 0.00015 },
-        { level: 2, amount: 0.00007 }
-      ];
-
-      let currentUid = userId;
-
-      for (const bonusLevel of levelBonuses) {
-        const userSnap = await db.ref('users/' + currentUid).once('value');
-        if (!userSnap.exists()) break;
-
-        const userData = userSnap.val();
-        const uplineCode = userData.uplineCode;
-        if (!uplineCode) break;
-
-        // Dapatkan uid upline dari referralCodes (username)
-        const uplineUidSnap = await db.ref('referralCodes/' + uplineCode).once('value');
-        if (!uplineUidSnap.exists()) break;
-
-        const uplineUid = uplineUidSnap.val();
-        const uplineRef = db.ref('users/' + uplineUid);
-        const uplineDataSnap = await uplineRef.once('value');
-        if (!uplineDataSnap.exists()) break;
-
-        const uplineData = uplineDataSnap.val();
-
-        // Batasi bonus referral harian
-        const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
-        let dailyRefPoints = uplineData.dailyRefPoints || 0;
-        let lastRefDay = uplineData.lastRefDay || '';
-
-        if (lastRefDay !== today) {
-          dailyRefPoints = 0;
-        }
-
-        if (dailyRefPoints >= refLimit) break; // Sudah cap hari ini
-
-        // Hitung bonus yang bisa diberikan (jangan melebihi limit)
-        let bonusAmount = bonusLevel.amount;
-        if (dailyRefPoints + bonusAmount > refLimit) {
-          bonusAmount = refLimit - dailyRefPoints;
-        }
-        if (bonusAmount <= 0) break;
-
-        const newPoints = (uplineData.points || 0) + bonusAmount;
-        dailyRefPoints += bonusAmount;
-
-        // Update poin dan daily ref poin upline
-        await uplineRef.update({
-          points: newPoints,
-          dailyRefPoints: dailyRefPoints,
-          lastRefDay: today
-        });
-
-        // Simpan riwayat bonus
-        const bonusHistoryRef = db.ref('bonusHistory').push();
-        await bonusHistoryRef.set({
-          userId: uplineUid,
-          fromUser: fromUsername,
-          points: bonusAmount,
-          level: bonusLevel.level,
-          timestamp: Date.now()
-        });
-
-        currentUid = uplineUid; // naik ke level atas
-      }
-    }
-
-    // Load chat realtime dan tampilkan dengan bubble
-    function loadChat() {
-      const chatBox = document.getElementById('chatBox');
-      chatBox.innerHTML = '';
-
-      db.ref('chat').limitToLast(50).on('child_added', snap => {
-        const data = snap.val();
-        if (!data) return;
-
-        const div = document.createElement('div');
-        div.classList.add('chat-message');
-        const currentUid = auth.currentUser ? auth.currentUser.uid : null;
-
-        if (data.uid === currentUid) {
-          div.classList.add('self');
-        } else {
-          div.classList.add('other');
-        }
-
-        div.innerHTML = `<span class="username">${data.username}</span>${escapeHtml(data.message)}`;
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
-    }
-
-    // Escape HTML for safety
-    function escapeHtml(text) {
-      return text.replace(/[&<>"']/g, function(m) {
-        return {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#39;'
-        }[m];
-      });
-    }
-
-    // Load downline user (yang pakai username user sebagai uplineCode)
-    function loadDownline(username) {
-      const downlineDiv = document.getElementById('downlineList');
-      downlineDiv.innerHTML = 'Memuat...';
-
-      db.ref('users').orderByChild('uplineCode').equalTo(username).once('value', snap => {
-        if (!snap.exists()) {
-          downlineDiv.innerHTML = 'Tidak ada downline.';
-          return;
-        }
-        let html = '';
-        snap.forEach(childSnap => {
-          const u = childSnap.val();
-          html += `<div class="list-item">${u.username} (Poin: ${ (u.points || 0).toFixed(5) })</div>`;
-        });
-        downlineDiv.innerHTML = html;
-      });
-    }
-
-    // Load riwayat bonus user
-    function loadBonusHistory(uid) {
-      const bonusDiv = document.getElementById('bonusHistory');
-      bonusDiv.innerHTML = 'Memuat...';
-
-      db.ref('bonusHistory').orderByChild('userId').equalTo(uid).limitToLast(30).once('value', snap => {
-        if (!snap.exists()) {
-          bonusDiv.innerHTML = 'Belum ada riwayat bonus.';
-          return;
-        }
-        let html = '';
-        snap.forEach(childSnap => {
-          const b = childSnap.val();
-          const date = new Date(b.timestamp);
-          html += `<div class="list-item">+${b.points.toFixed(5)} (Level ${b.level}) dari <b>${b.fromUser}</b> pada ${date.toLocaleString()}</div>`;
-        });
-        bonusDiv.innerHTML = html;
-      });
-    }
-
-    // Ajukan penarikan via WA
-    function sendWithdrawToWA() {
-  const name = document.getElementById("withdrawName").value.trim();
-  const username = document.getElementById("withdrawUser").value.trim();
-  const wallet = document.getElementById("withdrawWallet").value.trim();
-  const amount = document.getElementById("Jumlahpenarikan").value.trim();
-
-  if (!name || !username || !wallet || !amount) {
-    alert("Semua kolom harus diisi.");
-    return;
-  }
+      const user = auth.currentUser;
       if (!user) {
         alert('Harap login terlebih dahulu.');
         return;
@@ -548,24 +314,19 @@
           return;
         }
 
-        // Format pesan WA
         const message = `Halo Admin Mosso X Chat, saya ingin melakukan penarikan:\n\n` +
-    `👤 Nama: ${name}\n` +
-    `🆔 Username: ${username}\n` +
-    `💰 Jumlah Penarikan: ${amount} poin\n` +
-    `🏦 Alamat Wallet: ${wallet}\n\n` +
-    `Mohon segera diproses. Terima kasih 🙏`;
+          `👤 Nama: ${name}\n` +
+          `🆔 Username: ${username}\n` +
+          `💰 Jumlah Penarikan: ${amount} poin\n` +
+          `🏦 Alamat Wallet: ${wallet}\n\n` +
+          `Mohon segera diproses. Terima kasih 🙏`;
 
-        // Nomor WA admin kamu (ganti sesuai)
-        const waNumber = '6285117579009'; // contoh nomor Indonesia +62xxx
+        const waNumber = '6285117579009';
+        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 
-        // Encode pesan
-        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
-
-        // Reset poin user (anggap sudah ajukan, untuk hindari double withdraw)
         db.ref('users/' + user.uid).update({ points: 0 });
 
-        // Buka WA
+        document.getElementById('withdrawWarning').style.display = 'block';
         window.open(waUrl, '_blank');
       });
     }
