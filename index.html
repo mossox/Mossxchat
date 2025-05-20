@@ -2,644 +2,1094 @@
 <html lang="id">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Aplikasi Referral</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f1219;
-      margin: 0;
-      padding: 20px;
-      color: #0ff;
-      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
-    }
+    <meta charset="UTF-8" />
+    <title>Mossso X Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f1219;
+            margin: 0;
+            padding: 20px;
+            color: rgb(255, 238, 0);
+            text-shadow: 0 0 5px #0ff, 0 0 10px rgba(0, 255, 255, 0), 0 0 20px rgba(0, 255, 255, 0), 0 0 40px rgb(10, 10, 10);
+        }
 
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: #111622;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff;
-    }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #111622;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            border: 1px solid #0ff;
+            animation: glow 1.5s infinite alternate;
+        }
 
-    .box {
-      background: #111622;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px #0ff;
-    }
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+            }
 
-    input,
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      box-sizing: border-box;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-      background: #00121a;
-      color: #0ff;
-      text-shadow: none;
-      box-shadow: 0 0 8px #0ff inset;
-    }
+            to {
+                box-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
+            }
+        }
 
-    input::placeholder {
-      color: #0ff;
-      opacity: 0.6;
-    }
 
-    button {
-      background: #00ffff;
-      color: #001f27;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 0 15px #00ffff;
-      transition: background 0.3s ease;
-    }
+        h2,
+        h3,
+        h4 {
+            text-align: center;
+            color: #00ff62;
+            text-shadow: 0 0 5px #00ff62, 0 0 10px #00ff62;
+        }
 
-    button:hover {
-      background: #33ffff;
-      box-shadow: 0 0 25px #33ffff;
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #0ff;
+        }
 
-    .chat-box {
-      height: 200px;
-      overflow-y: auto;
-      border: 1px solid #0ff;
-      padding: 10px;
-      background: #00121a;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #0ff inset;
-      font-size: 14px;
-      color: #0ff;
-    }
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #0ff;
+            border-radius: 4px;
+            background: #0d101a;
+            color: #00ff62;
+            box-shadow: 0 0 5px #0ff;
+        }
 
-    .link {
-      color: #00ffff;
-      cursor: pointer;
-      text-decoration: underline;
-    }
+        button {
+            background: #00FFFF;
+            /* Biru Neon */
+            color: #0d101a;
+            /* Teks gelap agar kontras */
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            box-shadow: 0 0 8px #00FFFF, 0 0 15px #00FFFF;
+            /* Efek glow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .list-item {
-      padding: 5px 0;
-      border-bottom: 1px solid #033;
-    }
+        button:hover {
+            background: #00E6E6;
+            /* Sedikit lebih gelap saat hover */
+            box-shadow: 0 0 12px #00E6E6, 0 0 20px #00E6E6, 0 0 30px #00E6E6;
+            /* Glow lebih kuat saat hover */
+        }
 
-    #dashboard,
-    #registerSection {
-      display: none;
-    }
+        .tab-button {
+            background: #00BFFF;
+            /* Biru Langit (untuk variasi) */
+            color: #0d101a;
+            /* Teks gelap agar kontras */
+            border: 1px solid #00BFFF;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 5px #00BFFF;
+            /* Efek glow awal */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    @media(max-width:600px) {
-      body {
-        padding: 10px;
-      }
+        .tab-button:hover {
+            background: #00AADD;
+            /* Sedikit lebih gelap saat hover */
+            box-shadow: 0 0 10px #00AADD, 0 0 15px #00AADD;
+            /* Glow lebih kuat saat hover */
+        }
 
-      .container {
-        width: 100%;
-        padding: 0;
-      }
-    }
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-    /* Chat bubbles WA style */
-    .chat-message {
-      margin: 8px 0;
-      max-width: 75%;
-      padding: 8px 14px;
-      border-radius: 20px;
-      position: relative;
-      font-size: 14px;
-      line-height: 1.3;
-      word-wrap: break-word;
-    }
+        #dashboard {
+            margin-top: 20px;
+        }
 
-    .chat-message.self {
-      background: #00ff62;
-      color: #001f27;
-      margin-left: auto;
-      border-bottom-right-radius: 2px;
-      box-shadow: 0 0 10px #00ffff;
-    }
+        .info-box,
+        .chat-box,
+        .history-box,
+        .withdraw-box,
+        .voucher-box,
+        .downline-box {
+            background: #1a2233;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #0ff;
+        }
 
-    .chat-message.other {
-      background: #0ff;
-      color: #003333;
-      margin-right: auto;
-      border-bottom-left-radius: 2px;
-      box-shadow: 0 0 10px #0ff;
-    }
+        .info-box p,
+        .history-box div,
+        .withdraw-box div,
+        .voucher-box p,
+        .downline-box div {
+            margin: 5px 0;
+            color: rgb(255, 238, 0);
+            /* Changed to yellow */
+        }
 
-    .chat-message .username {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 3px;
-    }
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            border: 1px solid #0ff;
+            background: #0d101a;
+            padding: 10px;
+            border-radius: 6px;
+        }
 
-    /* Blink warning */
-    .blink-warning {
-      color: yellow;
-      font-weight: bold;
-      animation: blink 1s infinite;
-      text-shadow: 0 0 8px yellow;
-      margin-top: 8px;
-    }
+        /* Container for each message, including username and bubble */
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
 
-    @keyframes blink {
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 15px;
+            /* Rounded corners for the bubble */
+            max-width: 70%;
+            /* Limit bubble width */
+            word-wrap: break-word;
+            /* Break long words */
+            position: relative;
+            /* Needed for positioning username if you wanted it absolutely */
+        }
 
-      0%,
-      50%,
-      100% {
-        opacity: 1;
-      }
+        .username-label {
+            font-weight: bold;
+            font-size: 0.85em;
+            /* Slightly smaller username */
+            margin-bottom: 3px;
+            /* Space between username and bubble */
+        }
 
-      25%,
-      75% {
-        opacity: 0;
-      }
-    }
-  </style>
+        .message-wrapper.self {
+            align-items: flex-end;
+            /* Align self messages to the right */
+        }
+
+        .message-wrapper.other {
+            align-items: flex-start;
+            /* Align other messages to the left */
+        }
+
+        .message-wrapper.self .username-label {
+            color: #00e650;
+            /* Greenish for self username */
+            margin-right: 5px;
+            /* Slight indent from the right for self username */
+        }
+
+        .message-wrapper.other .username-label {
+            color: #ffcc00;
+            /* Yellowish for other username */
+            margin-left: 5px;
+            /* Slight indent from the left for other username */
+        }
+
+        .chat-message.self-bubble {
+            background-color: #007bff;
+            /* Blue for self messages */
+            color: white;
+            margin-right: 5px;
+            /* Adjust margin to align with username */
+        }
+
+        .chat-message.other-bubble {
+            background-color: #ffc107;
+            /* Yellow for other messages */
+            color: #333;
+            /* Darker text for readability on yellow */
+            margin-left: 5px;
+            /* Adjust margin to align with username */
+        }
+
+        /* New CSS for input and button alignment */
+        .chat-input-area {
+            display: flex;
+            margin-bottom: 10px;
+            /* Space below the input/button area */
+            gap: 5px;
+            /* Space between input and button */
+        }
+
+        #messageInput {
+            flex-grow: 1;
+            /* Allows input to take up available space */
+            margin-bottom: 0;
+            /* Remove existing bottom margin */
+        }
+
+        #sendMessageBtn {
+            width: auto;
+            /* Allow button to size based on content */
+            padding: 10px 15px;
+            /* Adjust padding for button */
+            margin-bottom: 0;
+            /* Remove existing bottom margin */
+        }
+
+        .list-item {
+            border-bottom: 1px dashed #0ff;
+            padding: 8px 0;
+            color: rgb(255, 238, 0);
+            /* Changed to yellow */
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        #referralStatus {
+            font-weight: bold;
+        }
+
+        .warning-message {
+            color: red;
+            background-color: #331f1f;
+            border: 1px solid red;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .blink-warning {
+            animation: blinker 1s linear infinite;
+            color: orange;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .blink-warning.success {
+            color: #00ff62;
+            animation: none;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <div id="loginSection" class="box">
-      <h2>Login</h2>
-      <input type="email" id="loginEmail" placeholder="Email" />
-      <input type="password" id="loginPassword" placeholder="Password" />
-      <button onclick="login()">Masuk</button>
-      <p>Belum punya akun? <span class="link" onclick="toggleView('register')">Daftar di sini</span></p>
+    <div class="container">
+        <div id="loginSection">
+            <h2>Login</h2>
+            <div class="tab-container">
+                <button class="tab-button" onclick="toggleView('login')">Login</button>
+                <button class="tab-button" onclick="toggleView('register')">Register</button>
+            </div>
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" placeholder="Masukkan email Anda" />
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" placeholder="Masukkan password Anda" />
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="registerSection" style="display: none">
+            <h2>Register</h2>
+            <div class="tab-container">
+                <button class="tab-button" onclick="toggleView('login')">Login</button>
+                <button class="tab-button" onclick="toggleView('register')">Register</button>
+            </div>
+            <label for="regEmail">Email:</label>
+            <input type="email" id="regEmail" placeholder="Masukkan email Anda" />
+            <label for="regPassword">Password:</label>
+            <input type="password" id="regPassword" placeholder="Buat password" />
+            <label for="regUsername">Username (Kode Referral Anda):</label>
+            <input type="text" id="regUsername" placeholder="Buat username unik" />
+            <label for="regRefCode">Kode Referral Upline (opsional):</label>
+            <input type="text" id="regRefCode" placeholder="Jika ada" />
+            <button onclick="register()">Register</button>
+        </div>
+
+        <div id="dashboard" style="display: none">
+            <h3>Selamat Datang, <span id="usernameDisplay"></span>! 👋</h3>
+            <h4><p>Mulai Obrolan untuk farming Mosso X</p></h4>
+            <p>Email: <span id="userEmail"></span></p>
+            <p>Mosso X Anda: <span id="myPoints">0</span></p>
+            <p>Status Referral: <span id="referralStatus">BELUM AKTIF</span></p>
+
+            <div id="referralStatusWarning" class="warning-message" style="display: none;">
+                ⚠️ Status referral Anda belum aktif. Masukkan voucher
+                untuk mulai menerima bonus dari downline dan melakukan penarikan!
+            </div>
+
+            <div class="chat-box">
+                <h4>Chat Global</h4>
+                <div id="chatBox">
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="messageInput" placeholder="Ketik pesan Anda..." />
+                <button id="sendMessageBtn" onclick="sendMessage()">Kirim</button>
+            </div>
+
+            <div class="downline-box">
+                <h4>Downline Anda</h4>
+                <div id="downlineList">
+                </div>
+            </div>
+
+            <div class="history-box">
+                <h4>Riwayat Bonus</h4>
+                <div id="bonusHistory">
+                </div>
+            </div>
+
+            <div class="voucher-box">
+                <h4>Aktifkan Bonus Referral</h4>
+                <label for="voucherCode">Kode Voucher:</label>
+                <input type="text" id="voucherCode" placeholder="Masukkan kode voucher" />
+                <button onclick="useVoucher()">Gunakan Voucher</button>
+                <p id="voucherMessage" class="warning-message" style="display: none;"></p>
+            </div>
+
+            <div class="withdraw-box">
+                <h4>Penarikan Mosso X</h4>
+                <label for="withdrawName">Nama Anda:</label>
+                <input type="text" id="withdrawName" placeholder="Masukkan nama Anda" />
+                <label for="withdrawUser">Username Anda:</label>
+                <input type="text" id="withdrawUser" placeholder="Masukkan username Anda" />
+                <label for="withdrawWallet">Alamat Wallet Mosso X :</label>
+                <input type="text" id="withdrawWallet" placeholder="Masukkan nomor wallet Anda" />
+                <label for="withdrawAmount">Jumlah Penarikan (min 50 Mosso X):</label>
+                <input type="number" id="withdrawAmount" placeholder="Jumlah Mosso X" step="0.00001" />
+                <label for="withdrawVoucher">Kode Voucher Penarikan:</label>
+                <input type="text" id="withdrawVoucher" placeholder="Masukkan kode voucher penarikan" />
+                <button onclick="requestWithdraw()">Ajukan Penarikan</button>
+                <p>⚠️Pastikan Alamat Wallet Penarikan Benar, Kerna Bersifat Final dan tidak Bisa diBatalkan⚠️ </p>
+                <p id="withdrawWarning" class="warning-message" style="display: none;"></p>
+            </div>
+
+
+            <button onclick="logout()">Logout</button>
+        </div>
     </div>
 
-    <div id="registerSection" class="box">
-      <h2>Register</h2>
-      <input type="email" id="regEmail" placeholder="Email" />
-      <input type="password" id="regPassword" placeholder="Password" />
-      <input type="text" id="regUsername" placeholder="Username (jadi kode referral Anda)" />
-      <input type="text" id="refCode" placeholder="Kode Referral (opsional)" />
-      <button onclick="register()">Daftar</button>
-      <p>Sudah punya akun? <span class="link" onclick="toggleView('login')">Login di sini</span></p>
-    </div>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCorYuBtoGM_ooHSz5nuCyisCIHPw6zbcA",
+            authDomain: "cari-jodoh-3619a.firebaseapp.com",
+            databaseURL: "https://cari-jodoh-3619a.firebaseio.com",
+            projectId: "cari-jodoh-3619a",
+            storageBucket: "cari-jodoh-3619a.firebasestorage.app",
+            messagingSenderId: "820175894081",
+            appId: "1:820175894081:web:4062ec62e430da8f8bb8c0"
+        };
 
-    <div id="dashboard" class="box">
-      <h2>Dashboard</h2>
-      <p>Selamat datang, <b><span id="usernameDisplay">Pengguna</span></b>! 👋</p>
-      <p>Email: <span id="userEmail"></span></p>
-      <p>Coin Mosso X Saya: <b><span id="myPoints">0</span></b></p>
-      <button onclick="logout()">Logout</button>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-      <div class="box" style="margin-top:20px;">
-        <h3>Chat Global</h3>
-        <div class="chat-box" id="chatBox"></div>
-        <input id="messageInput" placeholder="Tulis pesan..." />
-        <button onclick="sendMessage()">Kirim</button>
-      </div>
+        // KONSTANTA BONUS
+        const BONUS_CHAT_SELF = 0.0003;
+        const MAX_DAILY_CHAT_BONUS_SELF = 0.05; // Batasan bonus chat harian untuk diri sendiri
 
-      <div class="box" style="margin-top:20px;">
-        <h3>Penarikan Poin</h3>
-        <input id="withdrawName" placeholder="Nama lengkap" />
-        <input id="withdrawUser" placeholder="Username" />
-        <input id="withdrawWallet" placeholder="Alamat Wallet" />
-        <input id="withdrawAmount" type="number" placeholder="Jumlah Poin Yang Akan Ditarik" />
-        <button onclick="requestWithdraw()">Ajukan Penarikan</button>
-        <p id="withdrawWarning" class="blink-warning" style="display:none;">
-          ⚠️ Pastikan alamat wallet dan jumlah penarikan sudah benar. Penarikan tidak dapat dibatalkan.
-        </p>
-      </div>
+        const BONUS_CHAT_UPLINE_1 = 0.00015;
+        const BONUS_CHAT_UPLINE_2 = 0.00007;
+        const MAX_DAILY_CHAT_BONUS_UPLINE = 0.5; // Batasan bonus chat harian untuk upline dari referral
 
-      <div class="box" style="margin-top:20px;">
-        <h3>Downline Saya</h3>
-        <div id="downlineList">Memuat...</div>
-      </div>
+        const BONUS_REFERRAL_LEVEL_1 = 0.5;
+        const BONUS_REFERRAL_LEVEL_2 = 0.25;
 
-      <div class="box" style="margin-top:20px;">
-        <h3>Riwayat Bonus</h3>
-        <div id="bonusHistory">Memuat...</div>
-      </div>
-    </div>
-  </div>
+        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_1 = 0.0005;
+        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_2 = 0.00025;
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCorYuBtoGM_ooHSz5nuCyisCIHPw6zbcA",
-      authDomain: "cari-jodoh-3619a.firebaseapp.com",
-      databaseURL: "https://cari-jodoh-3619a.firebaseio.com",
-      projectId: "cari-jodoh-3619a"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+        // BATAS PENARIKAN UNTUK NONAKTIFKAN REFERRAL
+        const WITHDRAW_THRESHOLD_FOR_REFERRAL_DEACTIVATION = 100;
 
-    let chatToday = 0;
-    const chatLimit = 0.02;
-    const refLimit = 0.05;
 
-    function toggleView(view) {
-      document.getElementById('loginSection').style.display = (view === 'login') ? 'block' : 'none';
-      document.getElementById('registerSection').style.display = (view === 'register') ? 'block' : 'none';
-    }
+        function toggleView(view) {
+            document.getElementById('loginSection').style.display = (view === 'login') ? 'block' : 'none';
+            document.getElementById('registerSection').style.display = (view === 'register') ? 'block' : 'none';
+        }
 
-    function login() {
-      const email = document.getElementById('loginEmail').value;
-      const pass = document.getElementById('loginPassword').value;
-      auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
-    }
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
+        }
 
-    function register() {
-      const email = document.getElementById('regEmail').value;
-      const pass = document.getElementById('regPassword').value;
-      const username = document.getElementById('regUsername').value.trim();
-      const refCode = document.getElementById('refCode').value.trim();
-      if (!username) return alert("Username wajib diisi!");
+        function register() {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPassword').value;
+            const username = document.getElementById('regUsername').value.trim();
+            const refCode = document.getElementById('regRefCode').value.trim();
 
-      auth.createUserWithEmailAndPassword(email, pass)
-        .then(cred => {
-          const uid = cred.user.uid;
-          db.ref("users/" + uid).set({
-            email,
-            username,
-            referralCode: username,
-            uplineCode: refCode || null,
-            points: 0,
-            level: 1 // Tambahkan level pengguna
-          });
-          db.ref("referralCodes/" + username).set(uid);
-          // Tambahkan user ke upline nya
-          if (refCode) {
-            db.ref("referralCodes/" + refCode).once("value").then(snap => {
-              const uplineId = snap.val();
-              if (uplineId) {
-                db.ref("users/" + uplineId + "/downlines/" + uid).set(true);
-              }
-            })
-          }
-        })
-        .catch(err => alert(err.message));
-    }
+            if (!username) return alert("Username wajib diisi!");
 
-    function logout() {
-      auth.signOut();
-    }
+            db.ref("referralCodes").orderByValue().equalTo(username).once("value").then(snap => {
+                if (snap.exists()) {
+                    alert("Username ini sudah digunakan. Silakan pilih username lain.");
+                    return;
+                }
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('registerSection').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('userEmail').textContent = user.email;
+                if (refCode) {
+                    db.ref("referralCodes/" + refCode).once("value").then(refSnap => {
+                        if (!refSnap.exists()) {
+                            alert("Kode Referral tidak valid. Silakan cek kembali.");
+                            return;
+                        }
+                        performRegistration(email, pass, username, refCode);
+                    }).catch(err => alert(err.message));
+                } else {
+                    performRegistration(email, pass, username, null);
+                }
+            }).catch(err => alert(err.message));
+        }
 
-        const uid = user.uid;
-        const userRef = db.ref("users/" + uid);
-        userRef.on("value", snap => {
-          const data = snap.val();
-          if (data) {
-            document.getElementById("myPoints").textContent = (data.points || 0).toFixed(5);
-            document.getElementById("usernameDisplay").textContent = data.username || "Pengguna";
-            loadDownlines(data.referralCode);
-            loadBonusHistory(uid);
-          }
-        });
+        function performRegistration(email, pass, username, refCode) {
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(cred => {
+                    const uid = cred.user.uid;
 
-        db.ref("chat").off(); // Unsubscribe before resubscribing to prevent duplicates
-        db.ref("chat").on("child_added", snap => {
-          const msg = snap.val();
-          if (msg) addChatMessage(msg);
-        });
-      } else {
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('registerSection').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'none';
-      }
-    });
-
-    function addChatMessage(msg) {
-      const chatBox = document.getElementById("chatBox");
-      const div = document.createElement("div");
-      div.classList.add("chat-message");
-      if (auth.currentUser && msg.uid === auth.currentUser.uid) {
-        div.classList.add("self");
-      } else {
-        div.classList.add("other");
-      }
-      div.innerHTML = `<span class="username">${msg.username}:</span> ${msg.text}`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function sendMessage() {
-      const msgInput = document.getElementById("messageInput");
-      const text = msgInput.value.trim();
-      if (!text) return;
-
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Silakan login dulu");
-        return;
-      }
-
-      // Batasi chat per hari dan poin yang diberikan
-      if (chatToday >= chatLimit) {
-        alert("Batas poin chat hari ini sudah tercapai.");
-        return;
-      }
-
-      db.ref("users/" + user.uid).once("value").then(snap => {
-        const points = snap.val()?.points || 0;
-        const username = snap.val()?.username || "User";
-        const userLevel = snap.val()?.level || 1; //ambil level user
-        let uplineId = snap.val()?.uplineCode || null; //ambil upline
-
-        const chatRef = db.ref("chat").push();
-        chatRef.set({
-          uid: user.uid,
-          username,
-          text,
-          timestamp: Date.now()
-        }).then(() => {
-          // Tambah poin chat
-          chatToday += 0.0003;
-          db.ref("users/" + user.uid + "/points").set(points + 0.0003);
-          msgInput.value = "";
-
-          // Beri bonus ke upline level 1 dan 2
-          if (uplineId) {
-            db.ref("referralCodes/" + uplineId).once("value").then(snapUpline1 => {
-              const upline1Id = snapUpline1.val();
-              if (upline1Id) {
-                db.ref("users/" + upline1Id).once("value").then(snapUpline1Data => {
-                  const upline1Data = snapUpline1Data.val();
-                  const upline1Points = upline1Data.points || 0;
-                  db.ref("users/" + upline1Id + "/points").set(upline1Points + 0.00015);
-
-                  // Tambahkan catatan bonus untuk upline 1
-                  const bonusRef1 = db.ref("bonusHistory/" + upline1Id).push();
-                  bonusRef1.set({
-                    date: new Date().toLocaleDateString(),
-                    amount: 0.00015,
-                    from: username,
-                    level: userLevel
-                  });
-
-                  // Cari upline level 2 dari upline level 1
-                  const upline1UplineCode = snapUpline1Data.uplineCode;
-                  if (upline1UplineCode) {
-                    db.ref("referralCodes/" + upline1UplineCode).once("value").then(snapUpline2Id => {
-                      const upline2Id = snapUpline2Id.val();
-                      if (upline2Id) {
-                        db.ref("users/" + upline2Id).once("value").then(snapUpline2Data => {
-                          const upline2Data = snapUpline2Data.val();
-                          const upline2Points = upline2Data.points || 0;
-                          db.ref("users/" + upline2Id + "/points").set(upline2Points + 0.00015);
-
-                          // Tambahkan catatan bonus untuk upline 2
-                          const bonusRef2 = db.ref("bonusHistory/" + upline2Id).push();
-                          bonusRef2.set({
-                            date: new Date().toLocaleDateString(),
-                            amount: 0.00007,
-                            from: username,
-                            level: userLevel
-                          });
-                        });
-                      }
+                    db.ref("users/" + uid).set({
+                        email,
+                        username,
+                        referralCode: username,
+                        uplineCode: refCode || null,
+                        points: 0,
+                        level: 1,
+                        isReferralActive: false,
+                        totalWithdrawnAmount: 0, // Inisialisasi total penarikan
+                        dailyChatBonusSelf: 0,
+                        lastBonusDateSelf: ''
                     });
-                  }
+                    db.ref("referralCodes/" + username).set(uid);
+                    alert("Pendaftaran berhasil! Silakan login. Untuk mengaktifkan semua bonus, Anda perlu memasukkan voucher.");
+
                 })
-              }
-            })
-          }
-        });
-      });
-    }
-
-    // Penarikan dengan validasi minimal 10 poin dan warning blink kuning
-    function requestWithdraw() {
-      const nama = document.getElementById('withdrawName').value.trim();
-      const username = document.getElementById('withdrawUser').value.trim();
-      const wallet = document.getElementById('withdrawWallet').value.trim();
-      const amount = document.getElementById('withdrawAmount').value.trim();
-      const warningEl = document.getElementById('withdrawWarning');
-
-      if (!nama || !username || !wallet || !amount) {
-        alert("Isi semua data penarikan terlebih dahulu.");
-        return;
-      }
-
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Silakan login dulu.");
-        return;
-      }
-
-      db.ref("users/" + user.uid).once("value").then(snap => {
-        const points = snap.val()?.points || 0;
-        if (parseFloat(amount) > points) {
-          alert("Jumlah penarikan melebihi jumlah poin Anda.");
-          return;
-        }
-        if (parseFloat(amount) < 10) {
-          warningEl.style.display = 'block';
-          warningEl.textContent = "⚠️ Jumlah penarikan minimal 10 poin."; // Ubah teks peringatan
-          return;
-        } else {
-          warningEl.style.display = 'none';
+                .catch(err => alert(err.message));
         }
 
-        const email = user.email;
-        const text = `*Permintaan Penarikan*\nNama: ${nama}\nUsername: ${username}\nWallet: ${wallet}\nJumlah: ${amount}\nEmail: ${email}\nPoin: ${points.toFixed(5)}`;
-        const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(text)}`;
-        window.open(waUrl, "_blank");
 
-        // Kurangkan poin dari user
-        db.ref("users/" + user.uid + "/points").set(points - parseFloat(amount));
+        // Fungsi untuk mendistribusikan bonus
+        // type: "Referral Activation", "Chat Bonus", "Withdrawal Bonus"
+        async function distributeBonus(targetUid, bonusAmount, fromUsername, level, bonusType) {
+            if (!targetUid || bonusAmount <= 0) return;
 
-        // Simpan riwayat penarikan (opsional, tergantung kebutuhan)
-        const withdrawRef = db.ref("withdrawHistory/" + user.uid).push();
-        withdrawRef.set({
-          nama: nama,
-          username: username,
-          wallet: wallet,
-          amount: amount,
-          timestamp: Date.now()
-        });
-      });
-    }
+            try {
+                const snap = await db.ref("users/" + targetUid).once("value");
+                const userData = snap.val();
 
-    function loadDownlines(referralCode) {
-      if (!referralCode) {
-        document.getElementById('downlineList').textContent = 'Tidak ada referral.';
-        return;
-      }
+                // Pastikan user penerima bonus ada dan referralnya aktif
+                if (userData && userData.isReferralActive) {
+                    let currentPoints = userData.points || 0;
 
-      db.ref("users").orderByChild("uplineCode").equalTo(referralCode).once("value").then(snap => {
-        const val = snap.val();
-        const container = document.getElementById('downlineList');
-        container.innerHTML = "";
-        if (!val) {
-          container.textContent = 'Tidak ada referral.';
-          return;
-        }
+                    // --- Logika Batasan Bonus Chat Referral Harian DIMULAI ---
+                    const today = new Date().toLocaleDateString('id-ID'); // Format tanggal yang konsisten
+                    let dailyReferralChatBonus = userData.dailyReferralChatBonus || 0;
+                    let lastReferralBonusDate = userData.lastReferralBonusDate || '';
 
-        let downlineCount = 0;
-        let totalPoints = 0; // Untuk menyimpan total poin downline
+                    // Reset bonus harian jika sudah hari yang berbeda
+                    if (lastReferralBonusDate !== today) {
+                        dailyReferralChatBonus = 0;
+                        lastReferralBonusDate = today;
+                    }
 
-        Object.entries(val).forEach(([key, user]) => {
-          downlineCount++;
-          totalPoints += user.points || 0; // Tambahkan poin user ke total
+                    // Hanya terapkan batasan jika bonusType adalah "Chat Bonus"
+                    if (bonusType === "Chat Bonus") {
+                        if (dailyReferralChatBonus + bonusAmount > MAX_DAILY_CHAT_BONUS_UPLINE) {
+                            console.log(`Bonus chat referral untuk ${targetUid} dari ${fromUsername} dilewati: telah mencapai batas harian (${MAX_DAILY_CHAT_BONUS_UPLINE.toFixed(5)}).`);
+                            // Opsional: Anda bisa menambahkan cara untuk memberitahu upline bahwa mereka tidak menerima bonus karena batas
+                            return; // Hentikan distribusi jika batas tercapai
+                        }
+                        dailyReferralChatBonus += bonusAmount; // Tambahkan ke total bonus harian referral
+                    }
+                    // --- Logika Batasan Bonus Chat Referral Harian BERAKHIR ---
 
-          const div = document.createElement('div');
-          div.className = 'list-item';
-          div.textContent = `${user.username || 'User'} - Level: ${user.level} - Poin: ${user.points.toFixed(5) || 0}`;
-          container.appendChild(div);
-        });
+                    const newPoints = currentPoints + bonusAmount;
 
-        // Tampilkan total downline dan total poin
-        const summaryDiv = document.createElement('div');
-        summaryDiv.className = 'list-item';
-        summaryDiv.innerHTML = `<b>Total Downline: ${downlineCount}</b><br><b>Total Poin Downline: ${totalPoints.toFixed(5)}</b>`;
-        container.appendChild(summaryDiv);
-      });
-    }
+                    // Update points, dailyReferralChatBonus, dan lastReferralBonusDate di Firebase
+                    const updates = {
+                        points: newPoints
+                    };
+                    if (bonusType === "Chat Bonus") {
+                        updates.dailyReferralChatBonus = dailyReferralChatBonus;
+                        updates.lastReferralBonusDate = lastReferralBonusDate;
+                    }
 
+                    await db.ref("users/" + targetUid).update(updates);
 
-    function loadBonusHistory(uid) {
-      db.ref("bonusHistory/" + uid).once("value").then(snap => {
-        const val = snap.val();
-        const container = document.getElementById('bonusHistory');
-        container.innerHTML = "";
-        if (!val) {
-          container.textContent = "Belum ada bonus.";
-          return;
-        }
-        Object.values(val).forEach(bonus => {
-          const div = document.createElement("div");
-          div.className = 'list-item';
-          div.textContent = `${bonus.date} - ${bonus.amount} poin dari ${bonus.from}`;
-          container.appendChild(div);
-        });
-      });
-    }
-
-    // Fungsi untuk memberikan bonus referral
-    function distributeReferralBonus(uplineId, level, referrerUsername) {
-      if (!uplineId) return;
-
-      const bonus = level === 1 ? 0.000015 : level === 2 ? 0.00007 : 0; // Contoh bonus, bisa diubah
-      if (bonus === 0) return;
-
-      db.ref("users/" + uplineId).once("value").then(snap => {
-        const uplineData = snap.val();
-        if (uplineData) {
-          const currentPoints = uplineData.points || 0;
-          const newPoints = currentPoints + bonus;
-
-          db.ref("users/" + uplineId + "/points").set(newPoints).then(() => {
-            // Tambahkan catatan bonus
-            const bonusRef = db.ref("bonusHistory/" + uplineId).push();
-            bonusRef.set({
-              date: new Date().toLocaleDateString(),
-              amount: bonus,
-              from: referrerUsername,
-              level: level
-            });
-          });
-        }
-      });
-    }
-
-    // Fungsi yang dipanggil saat pendaftaran user baru
-    function register() {
-      const email = document.getElementById('regEmail').value;
-      const pass = document.getElementById('regPassword').value;
-      const username = document.getElementById('regUsername').value.trim();
-      const refCode = document.getElementById('refCode').value.trim();
-      if (!username) return alert("Username wajib diisi!");
-
-      auth.createUserWithEmailAndPassword(email, pass)
-        .then(cred => {
-          const uid = cred.user.uid;
-          let uplineId = null;
-          let uplineUsername = null;
-
-          // Dapatkan upline ID jika ada
-          if (refCode) {
-            db.ref("referralCodes/" + refCode).once("value").then(snap => {
-              uplineId = snap.val();
-              if (uplineId) {
-                // Ambil username upline
-                db.ref("users/" + uplineId).once("value").then(snapUpline => {
-                  uplineUsername = snapUpline.val().username;
-                  // Set data user baru
-                  db.ref("users/" + uid).set({
-                    email,
-                    username,
-                    referralCode: username,
-                    uplineCode: refCode || null,
-                    points: 0,
-                    level: 1 // Tambahkan level pengguna
-                  });
-                  db.ref("referralCodes/" + username).set(uid);
-
-                  // Tambahkan user ke downline upline level 1
-                  db.ref("users/" + uplineId + "/downlines/" + uid).set(true).then(() => {
-                    // Berikan bonus ke upline level 1
-                    distributeReferralBonus(uplineId, 1, username);
-
-                    // Cari upline level 2
-                    db.ref("users/" + uplineId).once("value").then(snapUplineLevel1 => {
-                      const uplineLevel1Data = snapUplineLevel1.val();
-                      if (uplineLevel1Data.uplineCode) {
-                        db.ref("referralCodes/" + uplineLevel1Data.uplineCode).once("value").then(snapUplineLevel2Id => {
-                          const uplineLevel2Id = snapUplineLevel2Id.val();
-                          if (uplineLevel2Id) {
-                            db.ref("users/" + uplineLevel2Id).once("value").then(snapUplineLevel2Data => {
-                              const uplineLevel2Username = snapUplineLevel2Data.val().username;
-                              // Tambahkan user ke downline upline level 2
-                              db.ref("users/" + uplineLevel2Id + "/downlines/" + uid).set(true).then(() => {
-                                // Berikan bonus ke upline level 2
-                                distributeReferralBonus(uplineLevel1Id, 1, username);
-                              })
-                            })
-                          }
-                        })
-                      }
+                    const bonusRef = db.ref("bonusHistory/" + targetUid).push();
+                    await bonusRef.set({
+                        date: new Date().toLocaleDateString('id-ID'),
+                        amount: bonusAmount,
+                        from: fromUsername,
+                        level: level,
+                        type: bonusType
                     });
-                  });
-                })
+                } else {
+                    console.log(`Bonus for ${targetUid} (${bonusType}) skipped: user not found or referral not active.`);
+                }
+            } catch (err) {
+                console.error(`Error distributing bonus to ${targetUid}:`, err);
+            }
+        }
 
-              } else {
-                // Set data user baru
-                db.ref("users/" + uid).set({
-                  email,
-                  username,
-                  referralCode: username,
-                  uplineCode: refCode || null,
-                  points: 0,
-                  level: 1 //Tambahkan level pengguna
+        function logout() {
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('registerSection').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('userEmail').textContent = user.email;
+
+                const uid = user.uid;
+                const userRef = db.ref("users/" + uid);
+                userRef.on("value", snap => {
+                    const data = snap.val();
+                    if (data) {
+                        document.getElementById("myPoints").textContent = (data.points || 0).toFixed(5);
+                        document.getElementById("usernameDisplay").textContent = data.username || "Pengguna";
+
+                        const referralStatusElement = document.getElementById("referralStatus");
+                        if (data.isReferralActive) {
+                            referralStatusElement.textContent = "AKTIF";
+                            referralStatusElement.style.color = "#00ff62";
+                            referralStatusElement.style.textShadow = "0 0 5px #00ff62, 0 0 10px #00ff62";
+                        } else {
+                            referralStatusElement.textContent = "BELUM AKTIF";
+                            referralStatusElement.style.color = "yellow";
+                            referralStatusElement.style.textShadow = "0 0 5px yellow, 0 0 10px yellow";
+                        }
+
+                        if (data.isReferralActive) {
+                            document.getElementById('referralStatusWarning').style.display = 'none';
+                        } else {
+                            document.getElementById('referralStatusWarning').style.display = 'block';
+                        }
+
+                        loadDownlines(user.uid);
+                        loadBonusHistory(uid);
+                    }
                 });
-                db.ref("referralCodes/" + username).set(uid);
-              }
-            });
-          } else {
-            // Set data user baru
-            db.ref("users/" + uid).set({
-              email,
-              username,
-              referralCode: username,
-              uplineCode: refCode || null,
-              points: 0,
-              level: 1 // Tambahkan level pengguna
-            });
-            db.ref("referralCodes/" + username).set(uid);
-          }
-        })
-        .catch(err => alert(err.message));
-    }
-  </script>
+
+                db.ref("chat").off();
+                db.ref("chat").on("child_added", snap => {
+                    const msg = snap.val();
+                    if (msg) addChatMessage(msg);
+                });
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('registerSection').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'none';
+            }
+        });
+
+        function addChatMessage(msg) {
+            const chatBox = document.getElementById("chatBox");
+
+            // Create a wrapper for the username and message bubble
+            const wrapperDiv = document.createElement("div");
+            wrapperDiv.classList.add("message-wrapper");
+
+            // Create the username element
+            const usernameSpan = document.createElement("span");
+            usernameSpan.classList.add("username-label");
+            usernameSpan.textContent = msg.username + ":";
+
+            // Create the message bubble element
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("chat-message");
+            messageDiv.textContent = msg.text;
+
+            if (auth.currentUser && msg.uid === auth.currentUser.uid) {
+                wrapperDiv.classList.add("self"); // For alignment of the wrapper
+                messageDiv.classList.add("self-bubble"); // For bubble styling
+            } else {
+                wrapperDiv.classList.add("other"); // For alignment of the wrapper
+                messageDiv.classList.add("other-bubble"); // For bubble styling
+            }
+
+            // Append username and message bubble to the wrapper
+            // For both self and other messages, username is appended first, then the message bubble.
+            // The alignment (left/right) is controlled by the .message-wrapper.self/other flex properties.
+            wrapperDiv.appendChild(usernameSpan);
+            wrapperDiv.appendChild(messageDiv);
+
+
+            chatBox.appendChild(wrapperDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const msgInput = document.getElementById("messageInput");
+            const text = msgInput.value.trim();
+            if (!text) return;
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Silakan login dulu");
+                return;
+            }
+
+            try {
+                const userSnap = await db.ref("users/" + user.uid).once("value");
+                const userData = userSnap.val();
+                let currentPoints = userData?.points || 0;
+                const username = userData?.username || "User";
+                const uplineCode = userData?.uplineCode || null;
+                const isReferralActive = userData?.isReferralActive || false;
+
+                // --- Logika Batasan Bonus Chat Harian Diri Sendiri ---
+                const today = new Date().toLocaleDateString('id-ID');
+                let dailyChatBonusSelf = userData.dailyChatBonusSelf || 0; // Ubah nama variabel agar tidak konflik
+                let lastBonusDateSelf = userData.lastBonusDateSelf || ''; // Ubah nama variabel agar tidak konflik
+
+                if (lastBonusDateSelf !== today) {
+                    dailyChatBonusSelf = 0;
+                    lastBonusDateSelf = today;
+                }
+
+                if (dailyChatBonusSelf + BONUS_CHAT_SELF > MAX_DAILY_CHAT_BONUS_SELF) {
+                    alert(`Anda telah mencapai batas maksimal bonus chat harian untuk diri sendiri (${MAX_DAILY_CHAT_BONUS_SELF.toFixed(5)} Mosso X). Coba lagi besok.`);
+                    msgInput.value = "";
+                    return;
+                }
+                // --- Logika Batasan Bonus Chat Harian Diri Sendiri Berakhir ---
+
+                const chatRef = db.ref("chat").push();
+                await chatRef.set({
+                    uid: user.uid,
+                    username,
+                    text,
+                    timestamp: Date.now()
+                });
+
+                const newPointsSender = currentPoints + BONUS_CHAT_SELF;
+                dailyChatBonusSelf += BONUS_CHAT_SELF;
+
+                // Update points, dailyChatBonusSelf, dan lastBonusDateSelf di Firebase
+                await db.ref("users/" + user.uid).update({
+                    points: newPointsSender,
+                    dailyChatBonusSelf: dailyChatBonusSelf,
+                    lastBonusDateSelf: lastBonusDateSelf
+                });
+
+                document.getElementById("myPoints").textContent = newPointsSender.toFixed(5);
+
+                msgInput.value = "";
+
+                // Distribusi bonus ke upline (akan menggunakan logika batasan di distributeBonus)
+                if (uplineCode && isReferralActive) {
+                    const snapUpline1 = await db.ref("referralCodes/" + uplineCode).once("value");
+                    const upline1Id = snapUpline1.val();
+                    if (upline1Id) {
+                        await distributeBonus(upline1Id, BONUS_CHAT_UPLINE_1, username, 1, "Chat Bonus");
+
+                        const snapUpline1Data = await db.ref("users/" + upline1Id).once("value");
+                        const upline1Data = snapUpline1Data.val();
+                        if (upline1Data && upline1Data.uplineCode) {
+                            const snapUpline2Id = await db.ref("referralCodes/" + upline1Data.uplineCode).once("value");
+                            const upline2Id = snapUpline2Id.val();
+                            if (upline2Id) {
+                                await distributeBonus(upline2Id, BONUS_CHAT_UPLINE_2, username, 2, "Chat Bonus");
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                alert("Error saat mengirim pesan atau mendistribusikan bonus chat: " + err.message);
+                console.error(err);
+            }
+        }
+
+        async function requestWithdraw() {
+            const nama = document.getElementById('withdrawName').value.trim();
+            const username = document.getElementById('withdrawUser').value.trim();
+            const wallet = document.getElementById('withdrawWallet').value.trim();
+            const amount = parseFloat(document.getElementById('withdrawAmount').value.trim());
+            const withdrawVoucherCode = document.getElementById('withdrawVoucher').value.trim();
+            const warningEl = document.getElementById('withdrawWarning');
+
+            if (!nama || !username || !wallet || isNaN(amount) || amount <= 0 || !withdrawVoucherCode) {
+                alert("Isi semua data penarikan dengan benar, termasuk Kode Voucher Penarikan.");
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Silakan login dulu.");
+                return;
+            }
+
+            try {
+                const userSnap = await db.ref("users/" + user.uid).once("value");
+                const userData = userSnap.val();
+                let currentPoints = userData?.points || 0;
+                const downlineUsername = userData?.username || "Downline";
+                const downlineUplineCode = userData?.uplineCode || null;
+                const isDownlineReferralActive = userData?.isReferralActive || false;
+                // Ambil totalWithdrawnAmount yang sudah ada, default ke 0 jika belum ada
+                let totalWithdrawnAmount = userData?.totalWithdrawnAmount || 0;
+
+
+                if (!isDownlineReferralActive) {
+                    alert("Status referral Anda belum aktif. Anda perlu mengaktifkan referral Anda dengan voucher admin untuk bisa melakukan penarikan.");
+                    return;
+                }
+
+                if (amount > currentPoints) {
+                    alert("Jumlah penarikan melebihi jumlah Mosso X Anda.");
+                    return;
+                }
+                if (amount < 50) {
+                    warningEl.style.display = 'block';
+                    warningEl.textContent = "⚠️ Jumlah penarikan minimal 50 Mosso X.";
+                    return;
+                } else {
+                    warningEl.style.display = 'none';
+                }
+
+                const voucherSnap = await db.ref("withdrawalVouchers/" + withdrawVoucherCode).once("value");
+                const voucherData = voucherSnap.val();
+
+                if (!voucherData) {
+                    alert("Kode Voucher Penarikan tidak valid atau tidak ditemukan.");
+                    return;
+                }
+
+                if (voucherData.isUsed) {
+                    alert("Kode Voucher Penarikan sudah terpakai.");
+                    return;
+                }
+
+                await db.ref("withdrawalVouchers/" + withdrawVoucherCode).update({
+                    isUsed: true,
+                    usedByUid: user.uid,
+                    usedAt: Date.now(),
+                    amountRequested: amount
+                });
+
+                const email = user.email;
+                const text = `*Permintaan Penarikan*\nNama: ${nama}\nUsername: ${username}\nWallet: ${wallet}\nJumlah: ${amount.toFixed(5)} Mosso X\nEmail: ${email}\nMosso X Saat Ini: ${currentPoints.toFixed(5)}\nKode Voucher Penarikan: ${withdrawVoucherCode}`;
+                const waUrl = `https://wa.me/6285117579009?text=${encodeURIComponent(text)}`;
+                window.open(waUrl, "_blank");
+
+                const newPointsAfterWithdrawal = currentPoints - amount;
+                const newTotalWithdrawnAmount = totalWithdrawnAmount + amount;
+
+                const updates = {
+                    points: newPointsAfterWithdrawal,
+                    totalWithdrawnAmount: newTotalWithdrawnAmount // Perbarui total penarikan
+                };
+
+                // Cek jika total penarikan mencapai atau melebihi 100 Mosso X
+                if (newTotalWithdrawnAmount >= WITHDRAW_THRESHOLD_FOR_REFERRAL_DEACTIVATION) {
+                    updates.isReferralActive = false; // Nonaktifkan status referral
+                    alert(`Selamat! Anda telah mencapai batas penarikan kumulatif ${WITHDRAW_THRESHOLD_FOR_REFERRAL_DEACTIVATION} Mosso X. Status referral Anda telah dinonaktifkan. Anda perlu mengaktifkan kembali dengan voucher baru.`);
+                }
+
+                await db.ref("users/" + user.uid).update(updates); // Perbarui user data
+
+                const withdrawRef = db.ref("withdrawHistory/" + user.uid).push();
+                await withdrawRef.set({
+                    nama: nama,
+                    username: username,
+                    wallet: wallet,
+                    amount: amount,
+                    timestamp: Date.now(),
+                    withdrawalVoucher: withdrawVoucherCode
+                });
+
+                document.getElementById("myPoints").textContent = newPointsAfterWithdrawal.toFixed(5);
+                document.getElementById('withdrawVoucher').value = '';
+                alert("Permintaan penarikan berhasil diajukan. Silakan cek WhatsApp Anda.");
+
+                if (downlineUplineCode && isDownlineReferralActive) {
+                    const snapUpline1 = await db.ref("referralCodes/" + downlineUplineCode).once("value");
+                    const upline1Id = snapUpline1.val();
+
+                    if (upline1Id) {
+                        const bonusUpline1 = amount * WITHDRAW_BONUS_PERCENTAGE_UPLINE_1;
+                        await distributeBonus(upline1Id, bonusUpline1, downlineUsername, 1, "Withdrawal Bonus");
+
+                        const snapUpline1Data = await db.ref("users/" + upline1Id).once("value");
+                        const upline1Data = snapUpline1Data.val();
+
+                        if (upline1Data && upline1Data.uplineCode) {
+                            const snapUpline2Id = await db.ref("referralCodes/" + upline1Data.uplineCode).once("value");
+                            const upline2Id = snapUpline2Id.val();
+                            if (upline2Id) {
+                                const bonusUpline2 = amount * WITHDRAW_BONUS_PERCENTAGE_UPLINE_2;
+                                await distributeBonus(upline2Id, bonusUpline2, downlineUsername, 2, "Withdrawal Bonus");
+                            }
+                        }
+                    }
+                }
+
+            } catch (err) {
+                alert("Error saat mengajukan penarikan atau mendistribusikan bonus: " + err.message);
+                console.error(err);
+            }
+        }
+
+        async function useVoucher() {
+            const voucherCode = document.getElementById('voucherCode').value.trim();
+            const voucherMessageEl = document.getElementById('voucherMessage');
+            voucherMessageEl.style.display = 'none';
+            voucherMessageEl.textContent = '';
+
+            if (!voucherCode) {
+                voucherMessageEl.style.display = 'block';
+                voucherMessageEl.textContent = "⚠️ Masukkan kode voucher terlebih dahulu.";
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Silakan login dulu untuk menggunakan voucher.");
+                return;
+            }
+
+            try {
+                const userRef = db.ref("users/" + user.uid);
+                const userSnap = await userRef.once("value");
+                const userData = userSnap.val();
+
+                // Hanya cek isReferralActive di sini, karena voucher sekarang bisa mengaktifkan kembali
+                // if (userData && userData.isReferralActive) {
+                //     voucherMessageEl.style.display = 'block';
+                //     voucherMessageEl.textContent = "⚠️ Status referral Anda sudah aktif.";
+                //     return;
+                // }
+
+                const snap = await db.ref("vouchers/" + voucherCode).once("value");
+                const voucherData = snap.val();
+
+                if (!voucherData) {
+                    voucherMessageEl.style.display = 'block';
+                    voucherMessageEl.textContent = "⚠️ Kode voucher tidak valid atau tidak ditemukan.";
+                    return;
+                }
+
+                if (voucherData.isUsed) {
+                    voucherMessageEl.style.display = 'block';
+                    voucherMessageEl.textContent = "⚠️ Kode voucher sudah terpakai.";
+                    return;
+                }
+
+                const uplineCodeFromVoucher = voucherData.uplineCode;
+
+                await db.ref("vouchers/" + voucherCode).update({
+                    isUsed: true,
+                    usedByUid: user.uid,
+                    usedAt: Date.now()
+                });
+
+                const updates = {
+                    isReferralActive: true
+                };
+
+                let finalUplineCode = userData.uplineCode;
+                if (!userData.uplineCode && uplineCodeFromVoucher) {
+                    updates.uplineCode = uplineCodeFromVoucher;
+                    finalUplineCode = uplineCodeFromVoucher;
+                } else if (userData.uplineCode && uplineCodeFromVoucher && userData.uplineCode !== uplineCodeFromVoucher) {
+                    // Ini adalah skenario di mana pengguna sudah punya upline dari pendaftaran,
+                    // dan voucher juga punya upline. Biarkan upline yang sudah ada.
+                    // Pesan ini hanya untuk informasi kepada pengguna
+                    voucherMessageEl.style.display = 'block';
+                    voucherMessageEl.textContent = "⚠️ Anda sudah memiliki upline referral dari pendaftaran. Voucher ini hanya mengaktifkan bonus Anda. Upline tidak diubah. (Lanjutkan)";
+                    console.warn("User already has an upline from registration, not changing it with voucher.");
+                }
+
+                await userRef.update(updates);
+                const currentUsername = userData.username || 'Pengguna Baru';
+
+                // Logika distribusi bonus referral saat aktivasi
+                if (finalUplineCode) {
+                    const snapUplineId = await db.ref("referralCodes/" + finalUplineCode).once("value");
+                    const upline1Uid = snapUplineId.val();
+                    if (upline1Uid) {
+                        // Pastikan downline dicatat hanya sekali di daftar downline upline
+                        await db.ref("users/" + upline1Uid + "/downlines/" + user.uid).set({
+                            username: currentUsername,
+                            level: 1,
+                            uid: user.uid
+                        });
+
+                        await distributeBonus(upline1Uid, BONUS_REFERRAL_LEVEL_1, currentUsername, 1, "Referral Activation");
+
+                        const snapUpline1Data = await db.ref("users/" + upline1Uid).once("value");
+                        const upline1DataFromVoucher = snapUpline1Data.val();
+                        if (upline1DataFromVoucher && upline1DataFromVoucher.uplineCode) {
+                            const snapUpline2Id = await db.ref("referralCodes/" + upline1DataFromVoucher.uplineCode).once("value");
+                            const upline2Uid = snapUpline2Id.val();
+                            if (upline2Uid) {
+                                // Pastikan downline dicatat hanya sekali di daftar downline upline level 2
+                                await db.ref("users/" + upline2Uid + "/downlines/" + user.uid).set({
+                                    username: currentUsername,
+                                    level: 2,
+                                    uid: user.uid
+                                });
+                                await distributeBonus(upline2Uid, BONUS_REFERRAL_LEVEL_2, currentUsername, 2, "Referral Activation");
+                            }
+                        }
+                    }
+                }
+
+                voucherMessageEl.style.display = 'block';
+                voucherMessageEl.className = 'blink-warning success';
+                voucherMessageEl.textContent = `Voucher berhasil digunakan! Status referral Anda sekarang AKTIF. Anda dapat mulai menerima bonus dan melakukan penarikan.`;
+                document.getElementById('voucherCode').value = '';
+
+                loadDownlines(user.uid);
+                loadBonusHistory(user.uid);
+                document.getElementById('referralStatusWarning').style.display = 'none';
+
+            } catch (err) {
+                voucherMessageEl.style.display = 'block';
+                voucherMessageEl.textContent = `Error: ${err.message}`;
+                console.error("Error in useVoucher:", err);
+            }
+        }
+
+
+        async function loadDownlines(myUid) {
+            const container = document.getElementById('downlineList');
+            container.innerHTML = "Memuat...";
+
+            const downlines = {
+                level1: [],
+                level2: []
+            };
+
+            try {
+                const myUserSnap = await db.ref("users/" + myUid).once("value");
+                const myUserData = myUserSnap.val();
+                const myReferralCode = myUserData?.referralCode;
+
+                if (!myReferralCode) {
+                    container.textContent = 'Untuk melihat downline Anda, pastikan Anda memiliki username (kode referral pribadi) yang sudah terdaftar.';
+                    return;
+                }
+
+                const level1Snap = await db.ref("users").orderByChild("uplineCode").equalTo(myReferralCode).once("value");
+                const level1Users = level1Snap.val();
+
+                if (level1Users) {
+                    for (const uid1 in level1Users) {
+                        const user1 = level1Users[uid1];
+                        downlines.level1.push(user1);
+
+                        const level2Snap = await db.ref("users").orderByChild("uplineCode").equalTo(user1.referralCode).once("value");
+                        const level2Users = level2Snap.val();
+
+                        if (level2Users) {
+                            for (const uid2 in level2Users) {
+                                const user2 = level2Users[uid2];
+                                downlines.level2.push(user2);
+                            }
+                        }
+                    }
+                }
+
+                container.innerHTML = "";
+
+                if (downlines.level1.length === 0 && downlines.level2.length === 0) {
+                    container.textContent = 'Anda belum memiliki downline di Level 1 atau Level 2.';
+                    return;
+                }
+
+                if (downlines.level1.length > 0) {
+                    const h4L1 = document.createElement('h4');
+                    h4L1.textContent = `Downline Level 1 (${downlines.level1.length} orang):`;
+                    container.appendChild(h4L1);
+                    downlines.level1.forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'list-item';
+                        div.textContent = `[L1] ${user.username || 'User'} - Mosso X: ${user.points !== undefined ? user.points.toFixed(5) : '0.00000'}`;
+                        container.appendChild(div);
+                    });
+                }
+
+                if (downlines.level2.length > 0) {
+                    const h4L2 = document.createElement('h4');
+                    h4L2.textContent = `Downline Level 2 (${downlines.level2.length} orang):`;
+                    container.appendChild(h4L2);
+                    downlines.level2.forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'list-item';
+                        div.textContent = `[L2] ${user.username || 'User'} - Mosso X: ${user.points !== undefined ? user.points.toFixed(5) : '0.00000'}`;
+                        container.appendChild(div);
+                    });
+                }
+
+                const totalDownlineCount = downlines.level1.length + downlines.level2.length;
+                const totalPointsL1 = downlines.level1.reduce((sum, user) => sum + (user.points || 0), 0);
+                const totalPointsL2 = downlines.level2.reduce((sum, user) => sum + (user.points || 0), 0);
+                const totalPointsAllDownlines = totalPointsL1 + totalPointsL2;
+
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'list-item';
+                summaryDiv.innerHTML = `<b>Total Downline (L1+L2): ${totalDownlineCount}</b><br><b>Total Mosso X Downline (L1+L2): ${totalPointsAllDownlines.toFixed(5)}</b>`;
+                container.appendChild(summaryDiv);
+
+            } catch (err) {
+                console.error("Error loading downlines:", err);
+                container.textContent = "Error memuat daftar downline.";
+            }
+        }
+
+        function loadBonusHistory(uid) {
+            db.ref("bonusHistory/" + uid).once("value").then(snap => {
+                const val = snap.val();
+                const container = document.getElementById('bonusHistory');
+                container.innerHTML = "";
+                if (!val) {
+                    container.textContent = "Belum ada bonus.";
+                    return;
+                }
+                const sortedBonuses = Object.values(val).sort((a, b) => {
+                    // Mengubah perbandingan untuk memastikan tanggal diurutkan dengan benar
+                    // Contoh: "20/05/2025" -> new Date(tahun, bulan-1, tanggal)
+                    const parseDate = (dateString) => {
+                        const [day, month, year] = dateString.split('/');
+                        return new Date(year, month - 1, day);
+                    };
+                    return parseDate(b.date) - parseDate(a.date);
+                });
+
+                sortedBonuses.forEach(bonus => {
+                    const div = document.createElement("div");
+                    div.className = 'list-item';
+                    div.textContent = `${bonus.date} - +${bonus.amount.toFixed(5)} Mosso X dari ${bonus.from} (Level ${bonus.level}) [Tipe: ${bonus.type || 'N/A'}]`;
+                    container.appendChild(div);
+                });
+            }).catch(err => console.error("Error loading bonus history:", err));
+        }
+    </script>
 </body>
+
 </html>
