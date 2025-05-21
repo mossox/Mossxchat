@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Mossso X Chat</title>
+    <title>Mossso X Chat & Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -75,7 +75,7 @@
             /* Teks gelap agar kontras */
             padding: 10px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: 44px;
             cursor: pointer;
             font-size: 16px;
             width: 100%;
@@ -266,7 +266,7 @@
         }
 
         .warning-message {
-            color: rgb(251, 255, 0);
+            color: red;
             background-color: #331f1f;
             border: 1px solid red;
             padding: 10px;
@@ -290,103 +290,417 @@
             color: #00ff62;
             animation: none;
         }
+
+        /* Admin Panel Specific Styles */
+        .admin-box {
+            background: #111622;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px #0ff;
+        }
+
+        #adminDashboard {
+            display: none;
+            /* Hidden by default */
+        }
+
+        .admin-box h3 {
+            font-size: 1.2em;
+        }
+
+        .admin-box input[type="text"],
+        .admin-box select,
+        .admin-box textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: none;
+            font-size: 14px;
+            background: #00121a;
+            color: #0ff;
+            text-shadow: none;
+            box-shadow: 0 0 8px #0ff inset;
+        }
+
+        .admin-box textarea {
+            resize: vertical;
+        }
+
+        .admin-box button {
+            background: #00ffff;
+            color: #001f27;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 0 15px #00ffff;
+            transition: background 0.3s ease;
+        }
+
+        .admin-box button:hover {
+            background: #33ffff;
+            box-shadow: 0 0 25px #33ffff;
+        }
+
+        .admin-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #0ff;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .admin-box th,
+        .admin-box td {
+            border: 1px solid #033;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .admin-box th {
+            background-color: #00222a;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        .admin-box tr:nth-child(even) {
+            background-color: #01161d;
+        }
+
+        .admin-box tr:hover {
+            background-color: #00303a;
+        }
+
+        .message-success {
+            color: lightgreen;
+            text-shadow: 0 0 5px lightgreen;
+        }
+
+        .message-error {
+            color: red;
+            text-shadow: 0 0 5px rgb(255, 251, 0);
+        }
+
+        #adminPanelLink {
+            display: none; /* Hidden by default for non-admins */
+            margin-top: 15px;
+        }
+
+        /* Tambahan untuk downline list dan bonus */
+        .downline-list-container li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #334455;
+        }
+
+        .downline-list-container li:last-child {
+            border-bottom: none;
+        }
+
+        .downline-info {
+            flex-grow: 1; /* Biarkan info downline mengambil ruang yang tersedia */
+        }
+
+        .downline-bonus {
+            flex-shrink: 0; /* Hindari bonus menyusut */
+            text-align: right;
+            font-weight: bold;
+            color: #ffcc00; /* Warna untuk bonus */
+        }
+
+        .view-level2-link {
+            color: #0ff;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 10px;
+            white-space: nowrap; /* Pastikan link tidak pecah baris */
+        }
+
+        /* CSS untuk Pop-up Modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+
+        .modal-content {
+            background-color: #111622;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #0ff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 15px rgba(0,255,255,0.7);
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content ul {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .modal-content ul li {
+            display: flex; /* Gunakan flexbox untuk item di modal juga */
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #334455;
+        }
+        .modal-content ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Styles for Withdrawal Modal */
+        #withdrawModalContent {
+            display: none; /* Hidden by default */
+        }
+
+        .withdraw-box button {
+            margin-top: 10px;
+        }
+
+        /* New styles for side-by-side buttons */
+        .dashboard-buttons-container {
+            display: flex;
+            justify-content: space-between; /* Distribute space evenly */
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 20px;
+        }
+
+        .dashboard-buttons-container button {
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            width: auto; /* Override default 100% width */
+            margin-bottom: 0; /* Remove bottom margin if any */
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div id="loginSection">
-            <h2>Login</h2>
-            <div class="tab-container">
-                <button class="tab-button" onclick="toggleView('login')">Login</button>
-                <button class="tab-button" onclick="toggleView('register')">Register</button>
+        <div id="userInterface">
+            <div id="loginSection">
+                <h2>Login</h2>
+                <div class="tab-container">
+                    <button class="tab-button" onclick="toggleView('login')">Login</button>
+                    <button class="tab-button" onclick="toggleView('register')">Register</button>
+                </div>
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Masukkan email Anda" />
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Masukkan password Anda" />
+                <button onclick="login()">Login</button>
             </div>
-            <label for="loginEmail">Email:</label>
-            <input type="email" id="loginEmail" placeholder="Masukkan email Anda" />
-            <label for="loginPassword">Password:</label>
-            <input type="password" id="loginPassword" placeholder="Masukkan password Anda" />
-            <button onclick="login()">Login</button>
+
+            <div id="registerSection" style="display: none">
+                <h2>Register</h2>
+                <div class="tab-container">
+                    <button class="tab-button" onclick="toggleView('login')">Login</button>
+                    <button class="tab-button" onclick="toggleView('register')">Register</button>
+                </div>
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" placeholder="Masukkan email Anda" />
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" placeholder="Buat password" />
+                <label for="regUsername">Username (Kode Referral Anda):</label>
+                <input type="text" id="regUsername" placeholder="Buat username unik" />
+                <label for="regRefCode">Kode Referral Upline (opsional):</label>
+                <input type="text" id="regRefCode" placeholder="Jika ada" />
+                <button onclick="register()">Register</button>
+            </div>
+
+            <div id="dashboard" style="display: none">
+                <h3>Selamat Datang, <span id="usernameDisplay"></span>! 👋</h3>
+                <h4><p>Mulai Obrolan untuk farming Mosso X</p></h4>
+                <p>Email: <span id="userEmail"></span></p>
+                <p>Mosso X Anda: <span id="myPoints">0</span></p>
+                <p>Status Referral: <span id="referralStatus">BELUM AKTIF</span></p>
+
+                <div id="referralStatusWarning" class="warning-message blink-warning" style="display: none;">
+                    ⚠️ Status referral Anda belum aktif. Masukkan voucher
+                    untuk mulai menerima bonus dari downline dan melakukan penarikan!
+                </div>
+
+                <button id="adminPanelLink" class="tab-button" onclick="showAdminPanel()">Admin Panel</button>
+
+                <div class="chat-box">
+                    <h4>Chat Global</h4>
+                    <div id="chatBox">
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="messageInput" placeholder="Ketik pesan Anda..." />
+                    <button id="sendMessageBtn" onclick="sendMessage()">Kirim</button>
+                </div>
+
+                <div class="voucher-box">
+                    <h4>Aktifkan Bonus Referral</h4>
+                    <label for="voucherCode">Kode Voucher:</label>
+                    <input type="text" id="voucherCode" placeholder="Masukkan kode voucher" />
+                    <button onclick="useVoucher()">Gunakan Voucher</button>
+                    <p id="voucherMessage" class="warning-message" style="display: none;"></p>
+                </div>
+
+                <div class="dashboard-buttons-container">
+                    <button onclick="showDownlineModal()">Jaringan Downline</button>
+                    <button onclick="showBonusHistoryModal()">Riwayat Bonus</button>
+                </div>
+
+                <div class="withdraw-box">
+                    <h4>Penarikan Mosso X</h4>
+                    <button onclick="showWithdrawalModal()">Ajukan Penarikan</button>
+                    <div id="withdrawModalContent">
+                        <label for="withdrawName">Nama Anda:</label>
+                        <input type="text" id="withdrawName" placeholder="Masukkan nama Anda" />
+                        <label for="withdrawUser">Username Anda:</label>
+                        <input type="text" id="withdrawUser" placeholder="Masukkan username Anda" />
+                        <label for="withdrawWallet">Alamat Wallet Mosso X :</label>
+                        <input type="text" id="withdrawWallet" placeholder="Masukkan nomor wallet Anda" />
+                        <label for="withdrawAmount">Jumlah Penarikan (min 50 Mosso X):</label>
+                        <input type="number" id="withdrawAmount" placeholder="Jumlah Mosso X" step="0.00001" />
+                        <label for="withdrawVoucher">Kode Voucher Penarikan:</label>
+                        <input type="text" id="withdrawVoucher" placeholder="Masukkan kode voucher penarikan" />
+                        <button onclick="requestWithdraw()">Konfirmasi Penarikan</button>
+                        <p>⚠️Pastikan Alamat Wallet Penarikan Benar, Kerna Bersifat Final dan tidak Bisa diBatalkan⚠️ </p>
+                        <p id="withdrawWarning" class="warning-message blink-warning" style="display: none;"></p>
+                    </div>
+                </div>
+
+
+                <button onclick="logout()">Logout</button>
+            </div>
         </div>
 
-        <div id="registerSection" style="display: none">
-            <h2>Register</h2>
-            <div class="tab-container">
-                <button class="tab-button" onclick="toggleView('login')">Login</button>
-                <button class="tab-button" onclick="toggleView('register')">Register</button>
+        <div id="adminPanelSection" class="container" style="display: none;">
+            <div id="adminLoginSection" class="admin-box">
+                <h2>Admin Login</h2>
+                <input type="email" id="adminEmail" placeholder="Email Admin" value="borneomossox@gmail.com" />
+                <input type="password" id="adminPassword" placeholder="Password Admin" value="Banjar2025" />
+                <button onclick="adminLogin()">Login</button>
+                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke Dashboard</button>
             </div>
-            <label for="regEmail">Email:</label>
-            <input type="email" id="regEmail" placeholder="Masukkan email Anda" />
-            <label for="regPassword">Password:</label>
-            <input type="password" id="regPassword" placeholder="Buat password" />
-            <label for="regUsername">Username (Kode Referral Anda):</label>
-            <input type="text" id="regUsername" placeholder="Buat username unik" />
-            <label for="regRefCode">Kode Referral Upline (opsional):</label>
-            <input type="text" id="regRefCode" placeholder="Jika ada" />
-            <button onclick="register()">Register</button>
+
+            <div id="adminDashboard" class="admin-box">
+                <h2>Admin Dashboard</h2>
+                <p>Selamat datang, <b id="adminEmailDisplay"></b>! <button onclick="adminLogout()" style="float: right; width: auto; padding: 5px 10px;">Logout</button></p>
+                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke Dashboard</button>
+
+                <div class="admin-box">
+                    <h3>Buat Voucher Referral Baru</h3>
+                    <p>Voucher ini digunakan user untuk mengaktifkan bonus referral dan downline. Anda harus memasukkan
+                        username (kode referral) dari upline yang akan menerima bonus dari user yang menggunakan voucher
+                        ini. Jika tidak ada upline yang spesifik, kosongkan bidang ini.</p>
+                    <input type="text" id="referralVoucherCode"
+                        placeholder="Kode Voucher Referral (kosongkan untuk otomatis)" />
+                    <input type="text" id="referralUplineCode"
+                        placeholder="Kode Referral Upline (username upline, opsional)" />
+                    <label for="referralVoucherCount"
+                        style="display: block; margin-top: 10px; color: #0ff;">Jumlah Voucher Dibuat:</label>
+                    <select id="referralVoucherCount" style="width: calc(100% - 20px);">
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                    </select>
+                    <button onclick="createMultipleReferralVouchers()">Buat Voucher Referral</button>
+                    <p id="referralVoucherMessage" style="margin-top: 10px;"></p>
+                </div>
+
+                <div class="admin-box">
+                    <h3>Buat Voucher Penarikan Baru</h3>
+                    <p>Voucher ini digunakan user saat mengajukan penarikan Mosso X. Setiap voucher hanya bisa digunakan
+                        sekali.</p>
+                    <input type="text" id="withdrawalVoucherCode"
+                        placeholder="Kode Voucher Penarikan (kosongkan untuk otomatis)" />
+                    <label for="withdrawalVoucherCount"
+                        style="display: block; margin-top: 10px; color: #0ff;">Jumlah Voucher Dibuat:</label>
+                    <select id="withdrawalVoucherCount" style="width: calc(100% - 20px);">
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                    </select>
+                    <button onclick="createMultipleWithdrawalVouchers()">Buat Voucher Penarikan</button>
+                    <p id="withdrawalVoucherMessage" style="margin-top: 10px;"></p>
+                </div>
+
+                <div class="admin-box">
+                    <h3>Daftar Voucher Referral</h3>
+                    <div id="referralVoucherList">Memuat...</div>
+                </div>
+
+                <div class="admin-box">
+                    <h3>Daftar Voucher Penarikan</h3>
+                    <div id="withdrawalVoucherList">Memuat...</div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div id="dashboard" style="display: none">
-            <h3>Selamat Datang, <span id="usernameDisplay"></span>! 👋</h3>
-            <h4><p>Mulai Obrolan untuk farming Mosso X</p></h4>
-            <p>Email: <span id="userEmail"></span></p>
-            <p>Mosso X Anda: <span id="myPoints">0</span></p>
-            <p>Status Referral: <span id="referralStatus">BELUM AKTIF</span></p>
+    <div id="level2Modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('level2Modal')">&times;</span>
+            <h4 id="modalTitle" style="color: #00ff62; text-align: center; margin-bottom: 15px;">Downline Level 2 dari: <span id="currentUplineUsername"></span></h4>
+            <ul id="level2DownlineList">
+                </ul>
+            <p id="noLevel2Message" style="text-align: center; color: #ffcc00; display: none;">Tidak ada downline Level 2 untuk upline ini.</p>
+        </div>
+    </div>
 
-            <div id="referralStatusWarning" class="warning-message" style="display: none;">
-                ⚠️ Status referral Anda belum aktif. Masukkan voucher
-                untuk mulai menerima bonus dari downline!
-            </div>
-
-            <div class="chat-box">
-                <h4>Chat Global</h4>
-                <div id="chatBox">
+    <div id="downlineNetworkModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('downlineNetworkModal')">&times;</span>
+            <h4 style="color: #00ff62; text-align: center; margin-bottom: 15px;">Jaringan Downline Anda</h4>
+            <p style="text-align: right; color: #ffcc00;">Total Bonus Jaringan: <span id="totalNetworkBonusModal">0.00000</span></p>
+            <div id="downlineListModal" style="max-height: 400px; overflow-y: auto;">
                 </div>
-            </div>
+        </div>
+    </div>
 
-            <div class="chat-input-area">
-                <input type="text" id="messageInput" placeholder="Ketik pesan Anda..." />
-                <button id="sendMessageBtn" onclick="sendMessage()">Kirim</button>
-            </div>
-
-            <div class="downline-box">
-                <h4>Downline Anda</h4>
-                <div id="downlineList">
+    <div id="bonusHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('bonusHistoryModal')">&times;</span>
+            <h4 style="color: #00ff62; text-align: center; margin-bottom: 15px;">Riwayat Bonus</h4>
+            <div id="bonusHistoryListModal" style="max-height: 400px; overflow-y: auto;">
                 </div>
-            </div>
-
-            <div class="history-box">
-                <h4>Riwayat Bonus</h4>
-                <div id="bonusHistory">
-                </div>
-            </div>
-
-            <div class="voucher-box">
-                <h4>Aktifkan Bonus Referral</h4>
-                <label for="voucherCode">Kode Voucher:</label>
-                <input type="text" id="voucherCode" placeholder="Masukkan kode voucher" />
-                <button onclick="useVoucher()">Gunakan Voucher</button>
-                <p id="voucherMessage" class="warning-message" style="display: none;"></p>
-            </div>
-
-            <div class="withdraw-box">
-                <h4>Penarikan Mosso X</h4>
-                <label for="withdrawName">Nama Anda:</label>
-                <input type="text" id="withdrawName" placeholder="Masukkan nama Anda" />
-                <label for="withdrawUser">Username Anda:</label>
-                <input type="text" id="withdrawUser" placeholder="Masukkan username Anda" />
-                <label for="withdrawWallet">Alamat Wallet Mosso X :</label>
-                <input type="text" id="withdrawWallet" placeholder="Masukkan nomor wallet Anda" />
-                <label for="withdrawAmount">Jumlah Penarikan (min 50 Mosso X):</label>
-                <input type="number" id="withdrawAmount" placeholder="Jumlah Mosso X" step="0.00001" />
-                <label for="withdrawVoucher">Kode Voucher Penarikan:</label>
-                <input type="text" id="withdrawVoucher" placeholder="Masukkan kode voucher penarikan" />
-                <button onclick="requestWithdraw()">Ajukan Penarikan</button>
-                <p>⚠️Pastikan Alamat Wallet Penarikan Benar, Kerna Bersifat Final dan tidak Bisa diBatalkan⚠️ </p>
-                <p id="withdrawWarning" class="warning-message" style="display: none;"></p>
-            </div>
-
-
-            <button onclick="logout()">Logout</button>
         </div>
     </div>
 
@@ -408,22 +722,33 @@
         const auth = firebase.auth();
 
         // KONSTANTA BONUS
-        const BONUS_CHAT_SELF = 0.0003;
-        const MAX_DAILY_CHAT_BONUS_SELF = 0.05; // Batasan bonus chat harian untuk diri sendiri
+        const BONUS_CHAT_SELF = 0.03;
+        const MAX_DAILY_CHAT_BONUS_SELF = 0.2; // Batasan bonus chat harian untuk diri sendiri
 
-        const BONUS_CHAT_UPLINE_1 = 0.00015;
-        const BONUS_CHAT_UPLINE_2 = 0.00007;
-        const MAX_DAILY_CHAT_BONUS_UPLINE = 0.5; // Batasan bonus chat harian untuk upline dari referral
+        const BONUS_CHAT_UPLINE_1 = 0.015;
+        const BONUS_CHAT_UPLINE_2 = 0.007;
+        const MAX_DAILY_CHAT_BONUS_UPLINE = 3; // Batasan bonus chat harian untuk upline dari referral
 
         const BONUS_REFERRAL_LEVEL_1 = 0.5;
         const BONUS_REFERRAL_LEVEL_2 = 0.25;
 
-        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_1 = 0.0005;
-        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_2 = 0.00025;
+        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_1 = 0.005;
+        const WITHDRAW_BONUS_PERCENTAGE_UPLINE_2 = 0.0025;
 
         // BATAS PENARIKAN UNTUK NONAKTIFKAN REFERRAL
         const WITHDRAW_THRESHOLD_FOR_REFERRAL_DEACTIVATION = 100;
 
+        // Kredensial Admin (HARAP UBAH ATAU GUNAKAN MEKANISME ROLE BERBASIS DATABASE DI PRODUKSI!)
+        const ADMIN_EMAIL = "borneomossox@gmail.com";
+        const ADMIN_PASSWORD = "Banjar2025"; // Ini hanya untuk demo login di HTML
+
+        let isAdminLoggedIn = false; // Flag untuk status login admin di sesi saat ini
+
+        // Format angka ke format mata uang (misalnya, dengan 5 desimal)
+        function formatBonusAmount(amount) {
+            if (typeof amount !== 'number') return '0.00000';
+            return amount.toFixed(5);
+        }
 
         function toggleView(view) {
             document.getElementById('loginSection').style.display = (view === 'login') ? 'block' : 'none';
@@ -535,6 +860,17 @@
                         updates.lastReferralBonusDate = lastReferralBonusDate;
                     }
 
+                    // Tambahkan entri ke koleksi bonus di bawah user penerima
+                    const bonusEntry = {
+                        amount: bonusAmount,
+                        fromUid: fromUsername, // Ini sebenarnya UID downline yang memicu bonus
+                        fromUsername: fromUsername,
+                        type: bonusType === "Referral Activation" ? `referral_level${level}` : (bonusType === "Chat Bonus" ? `chat_level${level}` : `withdrawal_level${level}`),
+                        createdAt: Date.now()
+                    };
+                    await db.ref(`users/${targetUid}/bonuses`).push(bonusEntry);
+
+
                     await db.ref("users/" + targetUid).update(updates);
 
                     const bonusRef = db.ref("bonusHistory/" + targetUid).push();
@@ -555,54 +891,106 @@
 
         function logout() {
             auth.signOut();
+            isAdminLoggedIn = false; // Reset admin flag
+            // Ensure main user interface is shown after logout
+            document.getElementById('userInterface').style.display = 'block';
+            document.getElementById('adminPanelSection').style.display = 'none';
         }
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('registerSection').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                document.getElementById('userEmail').textContent = user.email;
-
-                const uid = user.uid;
-                const userRef = db.ref("users/" + uid);
-                userRef.on("value", snap => {
-                    const data = snap.val();
-                    if (data) {
-                        document.getElementById("myPoints").textContent = (data.points || 0).toFixed(5);
-                        document.getElementById("usernameDisplay").textContent = data.username || "Pengguna";
-
-                        const referralStatusElement = document.getElementById("referralStatus");
-                        if (data.isReferralActive) {
-                            referralStatusElement.textContent = "AKTIF";
-                            referralStatusElement.style.color = "#00ff62";
-                            referralStatusElement.style.textShadow = "0 0 5px #00ff62, 0 0 10px #00ff62";
-                        } else {
-                            referralStatusElement.textContent = "BELUM AKTIF";
-                            referralStatusElement.style.color = "yellow";
-                            referralStatusElement.style.textShadow = "0 0 5px yellow, 0 0 10px yellow";
-                        }
-
-                        if (data.isReferralActive) {
-                            document.getElementById('referralStatusWarning').style.display = 'none';
-                        } else {
-                            document.getElementById('referralStatusWarning').style.display = 'block';
-                        }
-
-                        loadDownlines(user.uid);
-                        loadBonusHistory(uid);
-                    }
-                });
-
-                db.ref("chat").off();
-                db.ref("chat").on("child_added", snap => {
-                    const msg = snap.val();
-                    if (msg) addChatMessage(msg);
-                });
+        function showAdminPanel() {
+            // Hanya izinkan admin yang sudah login untuk melihat panel admin
+            if (isAdminLoggedIn) {
+                document.getElementById('userInterface').style.display = 'none';
+                document.getElementById('adminPanelSection').style.display = 'block';
+                // Jika sudah login sebagai admin, langsung tampilkan dashboard admin
+                document.getElementById('adminLoginSection').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadReferralVouchers();
+                loadWithdrawalVouchers();
             } else {
+                // Jika user mencoba masuk admin panel tapi belum login sebagai admin
+                document.getElementById('userInterface').style.display = 'none';
+                document.getElementById('adminPanelSection').style.display = 'block';
+                document.getElementById('adminLoginSection').style.display = 'block'; // Tampilkan form login admin
+                document.getElementById('adminDashboard').style.display = 'none';
+            }
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('userInterface').style.display = 'block';
+            document.getElementById('adminPanelSection').style.display = 'none';
+        }
+
+
+        auth.onAuthStateChanged(user => {
+            const adminPanelLink = document.getElementById('adminPanelLink');
+
+            if (user) {
+                // Check if the logged-in user is the admin
+                if (user.email === ADMIN_EMAIL) {
+                    isAdminLoggedIn = true;
+                    // For admin, hide user login/register, show dashboard with admin link
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('registerSection').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    adminPanelLink.style.display = 'block'; // Show admin link
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('usernameDisplay').textContent = "Admin"; // Display Admin name for clarity
+                    // No need to load user specific data if directly showing admin panel on admin login
+                    // but keeping it for consistency if admin also has a regular user profile
+                } else {
+                    isAdminLoggedIn = false;
+                    // For regular users
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('registerSection').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    adminPanelLink.style.display = 'none'; // Hide admin link
+                    document.getElementById('userEmail').textContent = user.email;
+
+                    const uid = user.uid;
+                    const userRef = db.ref("users/" + uid);
+                    userRef.on("value", snap => {
+                        const data = snap.val();
+                        if (data) {
+                            document.getElementById("myPoints").textContent = (data.points || 0).toFixed(5);
+                            document.getElementById("usernameDisplay").textContent = data.username || "Pengguna";
+
+                            const referralStatusElement = document.getElementById("referralStatus");
+                            if (data.isReferralActive) {
+                                referralStatusElement.textContent = "AKTIF";
+                                referralStatusElement.style.color = "#00ff62";
+                                referralStatusElement.style.textShadow = "0 0 5px #00ff62, 0 0 10px #00ff62";
+                            } else {
+                                referralStatusElement.textContent = "BELUM AKTIF";
+                                referralStatusElement.style.color = "yellow";
+                                referralStatusElement.style.textShadow = "0 0 5px yellow, 0 0 10px yellow";
+                            }
+
+                            if (data.isReferralActive) {
+                                document.getElementById('referralStatusWarning').style.display = 'none';
+                            } else {
+                                document.getElementById('referralStatusWarning').style.display = 'block';
+                            }
+                        }
+                    });
+
+                    db.ref("chat").off();
+                    db.ref("chat").on("child_added", snap => {
+                        const msg = snap.val();
+                        if (msg) addChatMessage(msg);
+                    });
+                }
+                // Ensure admin panel sections are correctly hidden/shown based on direct admin login status
+                if (!isAdminLoggedIn) {
+                    document.getElementById('adminPanelSection').style.display = 'none';
+                }
+            } else {
+                isAdminLoggedIn = false; // User logged out
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('registerSection').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'none';
+                adminPanelLink.style.display = 'none'; // Hide admin link on logout
+                document.getElementById('adminPanelSection').style.display = 'none'; // Hide admin panel sections
             }
         });
 
@@ -724,6 +1112,25 @@
             }
         }
 
+        // Global function to show any modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // Global function to close any modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showWithdrawalModal() {
+            const withdrawModalContent = document.getElementById('withdrawModalContent');
+            if (withdrawModalContent.style.display === 'none' || withdrawModalContent.style.display === '') {
+                withdrawModalContent.style.display = 'block';
+            } else {
+                withdrawModalContent.style.display = 'none';
+            }
+        }
+
         async function requestWithdraw() {
             const nama = document.getElementById('withdrawName').value.trim();
             const username = document.getElementById('withdrawUser').value.trim();
@@ -825,6 +1232,8 @@
                 document.getElementById("myPoints").textContent = newPointsAfterWithdrawal.toFixed(5);
                 document.getElementById('withdrawVoucher').value = '';
                 alert("Permintaan penarikan berhasil diajukan. Silakan cek WhatsApp Anda.");
+                document.getElementById('withdrawModalContent').style.display = 'none'; // Hide the modal content after successful withdrawal
+
 
                 if (downlineUplineCode && isDownlineReferralActive) {
                     const snapUpline1 = await db.ref("referralCodes/" + downlineUplineCode).once("value");
@@ -936,7 +1345,8 @@
                         await db.ref("users/" + upline1Uid + "/downlines/" + user.uid).set({
                             username: currentUsername,
                             level: 1,
-                            uid: user.uid
+                            uid: user.uid,
+                            isActivated: true // Tandai downline sudah aktif
                         });
 
                         await distributeBonus(upline1Uid, BONUS_REFERRAL_LEVEL_1, currentUsername, 1, "Referral Activation");
@@ -951,7 +1361,8 @@
                                 await db.ref("users/" + upline2Uid + "/downlines/" + user.uid).set({
                                     username: currentUsername,
                                     level: 2,
-                                    uid: user.uid
+                                    uid: user.uid,
+                                    isActivated: true // Tandai downline sudah aktif
                                 });
                                 await distributeBonus(upline2Uid, BONUS_REFERRAL_LEVEL_2, currentUsername, 2, "Referral Activation");
                             }
@@ -964,8 +1375,13 @@
                 voucherMessageEl.textContent = `Voucher berhasil digunakan! Status referral Anda sekarang AKTIF. Anda dapat mulai menerima bonus dan melakukan penarikan.`;
                 document.getElementById('voucherCode').value = '';
 
-                loadDownlines(user.uid);
-                loadBonusHistory(user.uid);
+                // Re-load downlines and bonus history to update status
+                const currentAuthUser = auth.currentUser;
+                if (currentAuthUser) {
+                    loadDownlines(currentAuthUser.uid);
+                    loadBonusHistory(currentAuthUser.uid);
+                }
+                
                 document.getElementById('referralStatusWarning').style.display = 'none';
 
             } catch (err) {
@@ -975,119 +1391,637 @@
             }
         }
 
+        async function showDownlineModal() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Silakan login dulu.");
+                return;
+            }
+            showModal('downlineNetworkModal');
+            loadDownlines(user.uid);
+        }
 
         async function loadDownlines(myUid) {
-            const container = document.getElementById('downlineList');
-            container.innerHTML = "Memuat...";
+            const downlineContainer = document.getElementById('downlineListModal');
+            const totalNetworkBonusSpan = document.getElementById('totalNetworkBonusModal'); 
 
-            const downlines = {
-                level1: [],
-                level2: []
-            };
+            if (!downlineContainer) return;
+            downlineContainer.innerHTML = ''; 
+
+            const loadingIndicator = document.createElement('p');
+            loadingIndicator.textContent = "Memuat data downline dan bonus...";
+            loadingIndicator.style.color = '#0ff';
+            loadingIndicator.style.textAlign = 'center';
+            downlineContainer.appendChild(loadingIndicator);
 
             try {
-                const myUserSnap = await db.ref("users/" + myUid).once("value");
-                const myUserData = myUserSnap.val();
-                const myReferralCode = myUserData?.referralCode;
+                const [usersSnapshot, myBonusesSnapshot] = await Promise.all([
+                    db.ref('users').once('value'),
+                    db.ref(`users/${myUid}/bonuses`).once('value') 
+                ]);
 
-                if (!myReferralCode) {
-                    container.textContent = 'Untuk melihat downline Anda, pastikan Anda memiliki username (kode referral pribadi) yang sudah terdaftar.';
+                const users = usersSnapshot.val();
+                const myBonuses = myBonusesSnapshot.val() || {}; 
+
+                if (!users) {
+                    downlineContainer.textContent = "Tidak ada data pengguna.";
+                    if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
                     return;
                 }
 
-                const level1Snap = await db.ref("users").orderByChild("uplineCode").equalTo(myReferralCode).once("value");
-                const level1Users = level1Snap.val();
+                const myUser = users[myUid];
+                if (!myUser || !myUser.referralCode) {
+                    downlineContainer.textContent = "Data pengguna Anda tidak lengkap.";
+                    if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
+                    return;
+                }
 
-                if (level1Users) {
-                    for (const uid1 in level1Users) {
-                        const user1 = level1Users[uid1];
-                        downlines.level1.push(user1);
+                const myReferralCode = myUser.referralCode;
 
-                        const level2Snap = await db.ref("users").orderByChild("uplineCode").equalTo(user1.referralCode).once("value");
-                        const level2Users = level2Snap.val();
+                const level1Downlines = [];
+                const level2DownlinesMap = {}; 
+                const level1BonusMap = {};    
+                const level2BonusMap = {};    
 
-                        if (level2Users) {
-                            for (const uid2 in level2Users) {
-                                const user2 = level2Users[uid2];
-                                downlines.level2.push(user2);
+                // Inisialisasi peta bonus dan hitung total bonus per downline
+                let currentTotalNetworkBonus = 0;
+                for (const bonusId in myBonuses) {
+                    const bonus = myBonuses[bonusId];
+                    if (bonus.amount && bonus.fromUid) {
+                        currentTotalNetworkBonus += bonus.amount; 
+                        // Pastikan fromUid ada di peta, jika tidak, inisialisasi
+                        if (level1BonusMap[bonus.fromUid] === undefined) level1BonusMap[bonus.fromUid] = 0;
+                        if (level2BonusMap[bonus.fromUid] === undefined) level2BonusMap[bonus.fromUid] = 0;
+
+                        if (bonus.type === 'referral_level1' || bonus.type === 'chat_level1' || bonus.type === 'withdrawal_level1') {
+                            level1BonusMap[bonus.fromUid] += bonus.amount;
+                        } else if (bonus.type === 'referral_level2' || bonus.type === 'chat_level2' || bonus.type === 'withdrawal_level2') {
+                            level2BonusMap[bonus.fromUid] += bonus.amount;
+                        }
+                    }
+                }
+                if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(currentTotalNetworkBonus);
+
+                // Kumpulkan semua downline Level 1 terlebih dahulu
+                for (const uid in users) {
+                    const user = users[uid];
+                    if (user.uplineCode === myReferralCode) {
+                        level1Downlines.push({ 
+                            uid: uid, 
+                            username: user.username, 
+                            referralCode: user.referralCode || '',
+                            totalBonusFromThisDownline: level1BonusMap[uid] || 0, // Dapatkan bonus dari map
+                            isActivated: user.isReferralActive || false // Status aktivasi
+                        });
+                        level2DownlinesMap[user.referralCode] = []; // Inisialisasi array untuk Level 2 dari downline ini
+                    }
+                }
+                
+                // Kumpulkan semua downline Level 2 dan tambahkan bonusnya ke map level2DownlinesMap
+                for (const uid in users) {
+                    const user = users[uid];
+                    // Cek apakah uplineCode user ini cocok dengan referralCode dari Level 1 downline
+                    for (const level1D of level1Downlines) {
+                        if (user.uplineCode === level1D.referralCode) {
+                            if (level2DownlinesMap[level1D.referralCode]) {
+                                level2DownlinesMap[level1D.referralCode].push({ 
+                                    uid: uid, 
+                                    username: user.username,
+                                    totalBonusFromThisDownline: level2BonusMap[uid] || 0, // Dapatkan bonus dari map
+                                    isActivated: user.isReferralActive || false // Status aktivasi
+                                });
                             }
+                            break; 
                         }
                     }
                 }
 
-                container.innerHTML = "";
+                downlineContainer.innerHTML = ''; 
 
-                if (downlines.level1.length === 0 && downlines.level2.length === 0) {
-                    container.textContent = 'Anda belum memiliki downline di Level 1 atau Level 2.';
+                if (level1Downlines.length === 0) {
+                    downlineContainer.textContent = "Anda belum memiliki jaringan downline Level 1.";
                     return;
                 }
 
-                if (downlines.level1.length > 0) {
-                    const h4L1 = document.createElement('h4');
-                    h4L1.textContent = `Downline Level 1 (${downlines.level1.length} orang):`;
-                    container.appendChild(h4L1);
-                    downlines.level1.forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'list-item';
-                        div.textContent = `[L1] ${user.username || 'User'} - Mosso X: ${user.points !== undefined ? user.points.toFixed(5) : '0.00000'}`;
-                        container.appendChild(div);
-                    });
+                const ul = document.createElement('ul');
+                ul.classList.add('downline-list-container'); 
+                
+                // Batasi tampilan Level 1 menjadi maksimal 10
+                const displayLimitLevel1 = 10;
+                const level1ToDisplay = level1Downlines.slice(0, displayLimitLevel1);
+
+                level1ToDisplay.forEach(level1D => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="downline-info">
+                            <span>${level1D.username} (Level 1)</span>
+                            <span class="view-level2-link" data-referral-code="${level1D.referralCode}" data-username="${level1D.username}">
+                                (Lihat Downline Level 2)
+                            </span>
+                        </div>
+                    `;
+                    ul.appendChild(li);
+                });
+
+                if (level1Downlines.length > displayLimitLevel1) {
+                    const moreLi = document.createElement('li');
+                    moreLi.style.textAlign = 'center';
+                    moreLi.style.fontStyle = 'italic';
+                    moreLi.textContent = `... dan ${level1Downlines.length - displayLimitLevel1} downline Level 1 lainnya.`;
+                    ul.appendChild(moreLi);
                 }
 
-                if (downlines.level2.length > 0) {
-                    const h4L2 = document.createElement('h4');
-                    h4L2.textContent = `Downline Level 2 (${downlines.level2.length} orang):`;
-                    container.appendChild(h4L2);
-                    downlines.level2.forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'list-item';
-                        div.textContent = `[L2] ${user.username || 'User'} - Mosso X: ${user.points !== undefined ? user.points.toFixed(5) : '0.00000'}`;
-                        container.appendChild(div);
-                    });
-                }
+                downlineContainer.appendChild(ul);
 
-                const totalDownlineCount = downlines.level1.length + downlines.level2.length;
-                const totalPointsL1 = downlines.level1.reduce((sum, user) => sum + (user.points || 0), 0);
-                const totalPointsL2 = downlines.level2.reduce((sum, user) => sum + (user.points || 0), 0);
-                const totalPointsAllDownlines = totalPointsL1 + totalPointsL2;
+                downlineContainer.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('view-level2-link')) {
+                        const referralCode = event.target.dataset.referralCode;
+                        const uplineUsername = event.target.dataset.username;
+                        showLevel2DownlinesModal(referralCode, uplineUsername, level2DownlinesMap);
+                    }
+                });
 
-                const summaryDiv = document.createElement('div');
-                summaryDiv.className = 'list-item';
-                summaryDiv.innerHTML = `<b>Total Downline (L1+L2): ${totalDownlineCount}</b><br><b>Total Mosso X Downline (L1+L2): ${totalPointsAllDownlines.toFixed(5)}</b>`;
-                container.appendChild(summaryDiv);
-
-            } catch (err) {
-                console.error("Error loading downlines:", err);
-                container.textContent = "Error memuat daftar downline.";
+            } catch (error) {
+                console.error("Error loading downlines:", error);
+                downlineContainer.textContent = "Terjadi kesalahan saat memuat downline.";
+                if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
             }
         }
 
-        function loadBonusHistory(uid) {
-            db.ref("bonusHistory/" + uid).once("value").then(snap => {
-                const val = snap.val();
-                const container = document.getElementById('bonusHistory');
-                container.innerHTML = "";
-                if (!val) {
-                    container.textContent = "Belum ada bonus.";
+
+        // --- Fungsi untuk Mengelola Pop-up Modal ---
+        const level2Modal = document.getElementById('level2Modal');
+        // Close button for level2Modal now uses global closeModal function
+        const modalTitle = document.getElementById('modalTitle');
+        const currentUplineUsernameSpan = document.getElementById('currentUplineUsername');
+        const level2DownlineList = document.getElementById('level2DownlineList');
+        const noLevel2Message = document.getElementById('noLevel2Message');
+
+        function showLevel2DownlinesModal(uplineReferralCode, uplineUsername, allLevel2Data) {
+            currentUplineUsernameSpan.textContent = uplineUsername;
+            level2DownlineList.innerHTML = ''; 
+            noLevel2Message.style.display = 'none'; 
+
+            const level2s = allLevel2Data[uplineReferralCode] || [];
+
+            // Hitung total bonus dari SEMUA downline Level 2 terkait upline ini
+            let totalBonusFromThisLevel2Group = 0;
+            level2s.forEach(downline => {
+                totalBonusFromThisLevel2Group += downline.totalBonusFromThisDownline;
+            });
+
+            // Tampilkan total bonus di header modal (opsional, bisa juga di bawah daftar)
+            modalTitle.innerHTML = `Downline Level 2 dari: <span id="currentUplineUsername">${uplineUsername}</span> <br> Total Bonus dari L2 ini: ${formatBonusAmount(totalBonusFromThisLevel2Group)}`;
+
+
+            if (level2s.length > 0) {
+                const displayLimitLevel2 = 10;
+                const level2ToDisplay = level2s.slice(0, displayLimitLevel2);
+
+                level2ToDisplay.forEach(downline => {
+                    const li = document.createElement('li');
+                    // Tampilkan hanya username dan status aktivasi (jika ada)
+                    const activationStatus = downline.isActivated ? 'Aktif' : 'Belum Aktif';
+                    li.innerHTML = `
+                        <span>${downline.username}</span>
+                        <span>(${activationStatus})</span>
+                    `;
+                    level2DownlineList.appendChild(li);
+                });
+
+                if (level2s.length > displayLimitLevel2) {
+                    const moreLi = document.createElement('li');
+                    moreLi.style.textAlign = 'center';
+                    moreLi.style.fontStyle = 'italic';
+                    moreLi.style.borderBottom = 'none'; // Jangan ada garis bawah untuk ini
+                    moreLi.textContent = `... dan ${level2s.length - displayLimitLevel2} downline lainnya.`;
+                    level2DownlineList.appendChild(moreLi);
+                }
+
+            } else {
+                noLevel2Message.style.display = 'block'; 
+            }
+
+            level2Modal.style.display = 'flex'; 
+        }
+
+        // Tutup modal saat user mengklik di luar area modal content
+        window.onclick = function(event) {
+            if (event.target == level2Modal) {
+                level2Modal.style.display = 'none';
+            }
+            if (event.target == document.getElementById('downlineNetworkModal')) {
+                document.getElementById('downlineNetworkModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('bonusHistoryModal')) {
+                document.getElementById('bonusHistoryModal').style.display = 'none';
+            }
+        }
+
+        async function showBonusHistoryModal() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Silakan login dulu.");
+                return;
+            }
+            showModal('bonusHistoryModal');
+            loadBonusHistory(user.uid);
+        }
+
+        async function loadBonusHistory(uid) {
+            const container = document.getElementById('bonusHistoryListModal');
+            container.innerHTML = ""; // Clear previous content
+
+            try {
+                const [bonusSnap, usersSnap] = await Promise.all([
+                    db.ref("users/" + uid + "/bonuses").once("value"),
+                    db.ref("users").once("value") // Get all users to check activation status
+                ]);
+
+                const bonuses = bonusSnap.val();
+                const allUsers = usersSnap.val();
+
+                if (!bonuses) {
+                    container.textContent = "Belum ada riwayat bonus.";
                     return;
                 }
-                const sortedBonuses = Object.values(val).sort((a, b) => {
-                    // Mengubah perbandingan untuk memastikan tanggal diurutkan dengan benar
-                    // Contoh: "20/05/2025" -> new Date(tahun, bulan-1, tanggal)
-                    const parseDate = (dateString) => {
-                        const [day, month, year] = dateString.split('/');
-                        return new Date(year, month - 1, day);
-                    };
-                    return parseDate(b.date) - parseDate(a.date);
-                });
+
+                const sortedBonuses = Object.values(bonuses).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 sortedBonuses.forEach(bonus => {
                     const div = document.createElement("div");
                     div.className = 'list-item';
-                    div.textContent = `${bonus.date} - +${bonus.amount.toFixed(5)} Mosso X dari ${bonus.from} (Level ${bonus.level}) [Tipe: ${bonus.type || 'N/A'}]`;
+
+                    // Get the fromUsername's activation status
+                    let activationStatus = "Status Tidak Diketahui";
+                    if (allUsers && bonus.fromUid) {
+                        const fromUser = Object.values(allUsers).find(user => user.username === bonus.fromUsername);
+                        if (fromUser) {
+                            activationStatus = fromUser.isReferralActive ? "AKTIF" : "BELUM AKTIF";
+                        }
+                    }
+
+                    div.textContent = `${new Date(bonus.createdAt).toLocaleDateString('id-ID')} - +${bonus.amount.toFixed(5)} Mosso X dari ${bonus.fromUsername} (Status Downline: ${activationStatus})`;
                     container.appendChild(div);
                 });
-            }).catch(err => console.error("Error loading bonus history:", err));
+            } catch (err) {
+                console.error("Error loading bonus history:", err);
+                container.textContent = "Error memuat riwayat bonus.";
+            }
+        }
+
+
+        // ADMIN PANEL FUNCTIONS (from HTML 2)
+        function adminLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPassword').value;
+
+            if (email === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(() => {
+                        console.log("Admin logged in successfully.");
+                        // Set the admin flag
+                        isAdminLoggedIn = true;
+                        document.getElementById('adminLoginSection').style.display = 'none';
+                        document.getElementById('adminDashboard').style.display = 'block';
+                        document.getElementById('adminEmailDisplay').textContent = email;
+                        loadReferralVouchers();
+                        loadWithdrawalVouchers();
+                    })
+                    .catch(err => {
+                        alert("Login Gagal: " + err.message);
+                        console.error(err);
+                    });
+            } else {
+                alert("Kredensial admin tidak valid.");
+            }
+        }
+
+        function adminLogout() {
+            auth.signOut();
+            isAdminLoggedIn = false; // Reset admin flag
+            document.getElementById('adminLoginSection').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            // Also hide the whole admin panel section and show user interface
+            document.getElementById('adminPanelSection').style.display = 'none';
+            document.getElementById('userInterface').style.display = 'block';
+        }
+
+        // --- Fungsi untuk menghasilkan kode voucher acak ---
+        function generateRandomVoucherCode(prefix) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = prefix;
+            const length = 7; // Mengurangi panjang agar lebih mudah diingat, bisa diubah
+
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // --- Fungsi untuk mengunduh voucher sebagai file teks ---
+        function downloadVouchersAsTextFile(voucherCodes, filename) {
+            const content = voucherCodes.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- Fungsi untuk membuat 1 Voucher Referral (dipanggil oleh createMultipleReferralVouchers) ---
+        async function createSingleReferralVoucher(voucherCodeToUse, uplineCodeInput, messageEl) {
+            let voucherCode = voucherCodeToUse; // Ini bisa dari input manual atau generate
+            const uplineCode = uplineCodeInput.trim();
+
+            // Jika kode yang diterima kosong, generate otomatis
+            if (!voucherCode) {
+                voucherCode = generateRandomVoucherCode("MossoX_REF_");
+            }
+
+            // Validasi upline code (hanya perlu sekali per batch, tapi aman jika di sini juga)
+            if (uplineCode) {
+                try {
+                    const uplineSnap = await db.ref("referralCodes/" + uplineCode).once("value");
+                    if (!uplineSnap.exists()) {
+                        messageEl.classList.add('message-error');
+                        messageEl.textContent = "Kode Referral Upline tidak ditemukan sebagai username yang valid. Kosongkan jika tidak ada upline spesifik.";
+                        return false; // Menghentikan pembuatan voucher ini
+                    }
+                } catch (error) {
+                    messageEl.classList.add('message-error');
+                    messageEl.textContent = "Error memvalidasi upline: " + error.message;
+                    console.error("Error validating upline code:", error);
+                    return false; // Menghentikan pembuatan voucher ini
+                }
+            }
+
+            try {
+                const voucherSnap = await db.ref("vouchers/" + voucherCode).once("value");
+                if (voucherSnap.exists()) {
+                    console.warn(`Duplicate voucher code generated: ${voucherCode}. Retrying...`);
+                    // Jika duplikat, coba lagi dengan kode baru (rekursif)
+                    // Hati-hati dengan rekursi tak terbatas jika generator kode bermasalah
+                    return await createSingleReferralVoucher(generateRandomVoucherCode("MossoX_REF_"), uplineCodeInput, messageEl);
+                }
+
+                await db.ref("vouchers/" + voucherCode).set({
+                    uplineCode: uplineCode || null,
+                    isUsed: false,
+                    createdAt: Date.now()
+                });
+                return voucherCode; // Mengembalikan kode voucher yang berhasil dibuat
+            } catch (error) {
+                messageEl.classList.add('message-error');
+                messageEl.textContent = "Error membuat voucher: " + error.message; // Pesan error Firebase
+                console.error("Error creating referral voucher:", error);
+                return false; // Mengindikasikan kegagalan
+            }
+        }
+
+        // --- Fungsi baru untuk membuat banyak voucher referral ---
+        async function createMultipleReferralVouchers() {
+            const voucherCodeManual = document.getElementById('referralVoucherCode').value.trim();
+            const uplineCodeInput = document.getElementById('referralUplineCode').value.trim();
+            const count = parseInt(document.getElementById('referralVoucherCount').value);
+            const messageEl = document.getElementById('referralVoucherMessage');
+            messageEl.textContent = ''; // Bersihkan pesan sebelumnya
+            messageEl.className = ''; // Bersihkan kelas sebelumnya
+
+            if (voucherCodeManual && count > 1) {
+                messageEl.classList.add('message-error');
+                messageEl.textContent = "Tidak bisa membuat banyak voucher dengan kode manual. Kosongkan kode untuk otomatis.";
+                return;
+            }
+
+            messageEl.textContent = `Membuat ${count} voucher...`;
+            let successfulCount = 0;
+            let generatedCodes = [];
+            let hasFatalError = false;
+
+            for (let i = 0; i < count; i++) {
+                // Gunakan kode manual untuk yang pertama, sisanya generate otomatis
+                const codeToPass = (i === 0 && voucherCodeManual) ? voucherCodeManual : generateRandomVoucherCode("MossoX_REF_");
+
+                const result = await createSingleReferralVoucher(codeToPass, uplineCodeInput, messageEl);
+                if (result) {
+                    successfulCount++;
+                    generatedCodes.push(result);
+                } else {
+                    // Jika ada error fatal (misal: permission denied) atau upline tidak valid, berhenti
+                    if (messageEl.classList.contains('message-error') && !messageEl.textContent.includes('sudah ada')) {
+                        hasFatalError = true;
+                        break; // Hentikan loop jika ada error yang bukan duplikat
+                    }
+                }
+            }
+
+            if (hasFatalError) {
+                // Pesan error sudah diatur oleh createSingleReferralVoucher
+                // Tidak perlu pesan sukses jika ada error fatal
+            } else if (successfulCount > 0) {
+                messageEl.classList.add('message-success');
+                messageEl.textContent = `${successfulCount} Voucher Referral berhasil dibuat.`;
+                if (generatedCodes.length > 0) {
+                    messageEl.innerHTML += `<br>Kode-kode yang dibuat: <br><textarea rows="5" readonly>${generatedCodes.join('\n')}</textarea>`;
+                    // NEW: Trigger download
+                    downloadVouchersAsTextFile(generatedCodes, `MossoX_Referral_Vouchers_${new Date().toISOString().slice(0, 10)}.txt`);
+                }
+            } else {
+                messageEl.classList.add('message-error');
+                if (!messageEl.textContent) { // Hanya jika tidak ada error spesifik sebelumnya
+                    messageEl.textContent = "Gagal membuat voucher. Periksa konsol browser untuk detail.";
+                }
+            }
+            document.getElementById('referralVoucherCode').value = '';
+            document.getElementById('referralUplineCode').value = '';
+            loadReferralVouchers(); // Refresh daftar setelah operasi selesai
+        }
+
+
+        function loadReferralVouchers() {
+            const container = document.getElementById('referralVoucherList');
+            if (!container) return; // Add a check to ensure element exists before trying to access it
+            container.innerHTML = "Memuat...";
+
+            db.ref("vouchers").on("value", snap => {
+                const vouchers = snap.val();
+                container.innerHTML = "";
+                if (!vouchers) {
+                    container.textContent = 'Belum ada voucher referral yang dibuat.';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Kode Voucher</th>
+                            <th>Upline Code</th>
+                            <th>Status</th>
+                            <th>Digunakan Oleh (UID)</th>
+                            <th>Digunakan Pada</th>
+                            <th>Dibuat Pada</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                const tbody = table.querySelector('tbody');
+
+                const sortedVouchers = Object.entries(vouchers).sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                sortedVouchers.forEach(([code, data]) => {
+                    const row = tbody.insertRow();
+                    row.insertCell().textContent = code;
+                    row.insertCell().textContent = data.uplineCode || '-';
+                    row.insertCell().textContent = data.isUsed ? 'Terpakai' : 'Belum Terpakai';
+                    row.insertCell().textContent = data.usedByUid || '-';
+                    row.insertCell().textContent = data.usedAt ? new Date(data.usedAt).toLocaleString('id-ID') : '-';
+                    row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleString('id-ID') : '-';
+                });
+                container.appendChild(table);
+            }, error => {
+                console.error("Error loading referral vouchers:", error);
+                container.textContent = "Error memuat daftar voucher referral.";
+            });
+        }
+
+        // --- Fungsi untuk membuat 1 Voucher Penarikan (dipanggil oleh createMultipleWithdrawalVouchers) ---
+        async function createSingleWithdrawalVoucher(voucherCodeToUse, messageEl) {
+            let voucherCode = voucherCodeToUse; // Ini bisa dari input manual atau generate
+
+            // Jika kode yang diterima kosong, generate otomatis
+            if (!voucherCode) {
+                voucherCode = generateRandomVoucherCode("MossoX_WD_");
+            }
+
+            try {
+                const voucherSnap = await db.ref("withdrawalVouchers/" + voucherCode).once("value");
+                if (voucherSnap.exists()) {
+                    console.warn(`Duplicate withdrawal voucher code generated: ${voucherCode}. Retrying...`);
+                    // Jika duplikat, coba lagi dengan kode baru (rekursif)
+                    return await createSingleWithdrawalVoucher(generateRandomVoucherCode("MossoX_WD_"), messageEl);
+                }
+
+                await db.ref("withdrawalVouchers/" + voucherCode).set({
+                    isUsed: false,
+                    createdAt: Date.now()
+                });
+                return voucherCode; // Mengembalikan kode voucher yang berhasil dibuat
+            } catch (error) {
+                messageEl.classList.add('message-error');
+                messageEl.textContent = "Error membuat voucher: " + error.message;
+                console.error("Error creating withdrawal voucher:", error);
+                return false; // Mengindikasikan kegagalan
+            }
+        }
+
+        // --- Fungsi baru untuk membuat banyak voucher penarikan ---
+        async function createMultipleWithdrawalVouchers() {
+            const voucherCodeManual = document.getElementById('withdrawalVoucherCode').value.trim();
+            const count = parseInt(document.getElementById('withdrawalVoucherCount').value);
+            const messageEl = document.getElementById('withdrawalVoucherMessage');
+            messageEl.textContent = ''; // Bersihkan pesan sebelumnya
+            messageEl.className = ''; // Bersihkan kelas sebelumnya
+
+            if (voucherCodeManual && count > 1) {
+                messageEl.classList.add('message-error');
+                messageEl.textContent = "Tidak bisa membuat banyak voucher dengan kode manual. Kosongkan kode untuk otomatis.";
+                return;
+            }
+
+            messageEl.textContent = `Membuat ${count} voucher...`;
+            let successfulCount = 0;
+            let generatedCodes = [];
+            let hasFatalError = false;
+
+            for (let i = 0; i < count; i++) {
+                // Gunakan kode manual untuk yang pertama, sisanya generate otomatis
+                const codeToPass = (i === 0 && voucherCodeManual) ? voucherCodeManual : generateRandomVoucherCode("MossoX_WD_");
+
+                const result = await createSingleWithdrawalVoucher(codeToPass, messageEl);
+                if (result) {
+                    successfulCount++;
+                    generatedCodes.push(result);
+                } else {
+                    // Jika ada error fatal (misal: permission denied), berhenti
+                    if (messageEl.classList.contains('message-error') && !messageEl.textContent.includes('sudah ada')) {
+                        hasFatalError = true;
+                        break;
+                    }
+                }
+            }
+
+            if (hasFatalError) {
+                // Pesan error sudah diatur oleh createSingleWithdrawalVoucher
+            } else if (successfulCount > 0) {
+                messageEl.classList.add('message-success');
+                messageEl.textContent = `${successfulCount} Voucher Penarikan berhasil dibuat.`;
+                if (generatedCodes.length > 0) {
+                    messageEl.innerHTML += `<br>Kode-kode yang dibuat: <br><textarea rows="5" readonly>${generatedCodes.join('\n')}</textarea>`;
+                    // NEW: Trigger download
+                    downloadVouchersAsTextFile(generatedCodes, `MossoX_Withdrawal_Vouchers_${new Date().toISOString().slice(0, 10)}.txt`);
+                }
+            } else {
+                messageEl.classList.add('message-error');
+                if (!messageEl.textContent) { // Hanya jika tidak ada error spesifik sebelumnya
+                    messageEl.textContent = "Gagal membuat voucher. Periksa konsol browser untuk detail.";
+                }
+            }
+            document.getElementById('withdrawalVoucherCode').value = '';
+            loadWithdrawalVouchers(); // Refresh daftar setelah operasi selesai
+        }
+
+        function loadWithdrawalVouchers() {
+            const container = document.getElementById('withdrawalVoucherList');
+            if (!container) return; // Add a check to ensure element exists before trying to access it
+            container.innerHTML = "Memuat...";
+
+            db.ref("withdrawalVouchers").on("value", snap => {
+                const vouchers = snap.val();
+                container.innerHTML = "";
+                if (!vouchers) {
+                    container.textContent = 'Belum ada voucher penarikan yang dibuat.';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Kode Voucher</th>
+                            <th>Status</th>
+                            <th>Digunakan Oleh (UID)</th>
+                            <th>Jumlah Penarikan</th>
+                            <th>Digunakan Pada</th>
+                            <th>Dibuat Pada</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                const tbody = table.querySelector('tbody');
+
+                const sortedVouchers = Object.entries(vouchers).sort(([, a], [, b]) => (b.createdAt || 0) - (a.createdAt || 0));
+
+
+                sortedVouchers.forEach(([code, data]) => {
+                    const row = tbody.insertRow(); // Corrected: Use tbody.insertRow()
+                    row.insertCell().textContent = code;
+                    row.insertCell().textContent = data.isUsed ? 'Terpakai' : 'Belum Terpakai';
+                    row.insertCell().textContent = data.usedByUid || '-';
+                    row.insertCell().textContent = data.amountRequested !== undefined ? data.amountRequested.toFixed(5) : '-';
+                    row.insertCell().textContent = data.usedAt ? new Date(data.usedAt).toLocaleString('id-ID') : '-';
+                    row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleString('id-ID') : '-';
+                });
+                container.appendChild(table);
+            }, error => {
+                console.error("Error loading withdrawal vouchers:", error);
+                container.textContent = "Error memuat daftar voucher penarikan.";
+            });
         }
     </script>
 </body>
