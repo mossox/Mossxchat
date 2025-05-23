@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Mossso X Chat</title>
+    <title>Mossso X Chat & Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -387,7 +387,8 @@
         }
 
         #adminPanelLink {
-            display: none; /* Hidden by default for non-admins */
+            display: none;
+            /* Hidden by default for non-admins */
             margin-top: 15px;
         }
 
@@ -405,14 +406,17 @@
         }
 
         .downline-info {
-            flex-grow: 1; /* Biarkan info downline mengambil ruang yang tersedia */
+            flex-grow: 1;
+            /* Biarkan info downline mengambil ruang yang tersedia */
         }
 
         .downline-bonus {
-            flex-shrink: 0; /* Hindari bonus menyusut */
+            flex-shrink: 0;
+            /* Hindari bonus menyusut */
             text-align: right;
             font-weight: bold;
-            color: #ffcc00; /* Warna untuk bonus */
+            color: #ffcc00;
+            /* Warna untuk bonus */
         }
 
         .view-level2-link {
@@ -420,22 +424,32 @@
             cursor: pointer;
             text-decoration: underline;
             margin-left: 10px;
-            white-space: nowrap; /* Pastikan link tidak pecah baris */
+            white-space: nowrap;
+            /* Pastikan link tidak pecah baris */
         }
 
         /* CSS untuk Pop-up Modal */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Black w/ opacity */
+            align-items: center;
+            /* Center vertically */
+            justify-content: center;
+            /* Center horizontally */
         }
 
         .modal-content {
@@ -446,7 +460,7 @@
             border-radius: 8px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 0 15px rgba(0,255,255,0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
             position: relative;
         }
 
@@ -473,18 +487,21 @@
         }
 
         .modal-content ul li {
-            display: flex; /* Gunakan flexbox untuk item di modal juga */
+            display: flex;
+            /* Gunakan flexbox untuk item di modal juga */
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px dashed #334455;
         }
+
         .modal-content ul li:last-child {
             border-bottom: none;
         }
 
         /* Styles for Withdrawal Modal */
         #withdrawModalContent {
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
         }
 
         .withdraw-box button {
@@ -494,15 +511,20 @@
         /* New styles for side-by-side buttons */
         .dashboard-buttons-container {
             display: flex;
-            justify-content: space-between; /* Distribute space evenly */
-            gap: 10px; /* Space between buttons */
+            justify-content: space-between;
+            /* Distribute space evenly */
+            gap: 10px;
+            /* Space between buttons */
             margin-bottom: 20px;
         }
 
         .dashboard-buttons-container button {
-            flex-grow: 1; /* Allow buttons to grow and fill space */
-            width: auto; /* Override default 100% width */
-            margin-bottom: 0; /* Remove bottom margin if any */
+            flex-grow: 1;
+            /* Allow buttons to grow and fill space */
+            width: auto;
+            /* Override default 100% width */
+            margin-bottom: 0;
+            /* Remove bottom margin if any */
         }
     </style>
 </head>
@@ -542,7 +564,9 @@
 
             <div id="dashboard" style="display: none">
                 <h3>Selamat Datang, <span id="usernameDisplay"></span>! 👋</h3>
-                <h4><p>Mulai Obrolan untuk farming Mosso X</p></h4>
+                <h4>
+                    <p>Mulai Obrolan untuk farming Mosso X</p>
+                </h4>
                 <p>Email: <span id="userEmail"></span></p>
                 <p>Mosso X Anda: <span id="myPoints">0</span></p>
                 <p>Status Referral: <span id="referralStatus">BELUM AKTIF</span></p>
@@ -593,7 +617,8 @@
                         <label for="withdrawVoucher">Kode Voucher Penarikan:</label>
                         <input type="text" id="withdrawVoucher" placeholder="Masukkan kode voucher penarikan" />
                         <button onclick="requestWithdraw()">Konfirmasi Penarikan</button>
-                        <p>⚠️Pastikan Alamat Wallet Penarikan Benar, Kerna Bersifat Final dan tidak Bisa diBatalkan⚠️ </p>
+                        <p>⚠️Pastikan Alamat Wallet Penarikan Benar, Kerna Bersifat Final dan tidak Bisa diBatalkan⚠️
+                        </p>
                         <p id="withdrawWarning" class="warning-message blink-warning" style="display: none;"></p>
                     </div>
                 </div>
@@ -609,13 +634,16 @@
                 <input type="email" id="adminEmail" placeholder="Email Admin" value="borneomossox@gmail.com" />
                 <input type="password" id="adminPassword" placeholder="Password Admin" value="Banjar2025" />
                 <button onclick="adminLogin()">Login</button>
-                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke Dashboard</button>
+                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke
+                    Dashboard</button>
             </div>
 
             <div id="adminDashboard" class="admin-box">
                 <h2>Admin Dashboard</h2>
-                <p>Selamat datang, <b id="adminEmailDisplay"></b>! <button onclick="adminLogout()" style="float: right; width: auto; padding: 5px 10px;">Logout</button></p>
-                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke Dashboard</button>
+                <p>Selamat datang, <b id="adminEmailDisplay"></b>! <button onclick="adminLogout()"
+                        style="float: right; width: auto; padding: 5px 10px;">Logout</button></p>
+                <button onclick="hideAdminPanel()" style="margin-top: 10px; background-color: #dc3545;">Kembali ke
+                    Dashboard</button>
 
                 <div class="admin-box">
                     <h3>Buat Voucher Referral Baru</h3>
@@ -678,10 +706,13 @@
     <div id="level2Modal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('level2Modal')">&times;</span>
-            <h4 id="modalTitle" style="color: #00ff62; text-align: center; margin-bottom: 15px;">Downline Level 2 dari: <span id="currentUplineUsername"></span></h4>
+            <h4 id="modalTitle" style="color: #00ff62; text-align: center; margin-bottom: 15px;">Downline Level 2 dari:
+                <span id="currentUplineUsername"></span>
+            </h4>
             <ul id="level2DownlineList">
-                </ul>
-            <p id="noLevel2Message" style="text-align: center; color: #ffcc00; display: none;">Tidak ada downline Level 2 untuk upline ini.</p>
+            </ul>
+            <p id="noLevel2Message" style="text-align: center; color: #ffcc00; display: none;">Tidak ada downline Level
+                2 untuk upline ini.</p>
         </div>
     </div>
 
@@ -689,9 +720,10 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('downlineNetworkModal')">&times;</span>
             <h4 style="color: #00ff62; text-align: center; margin-bottom: 15px;">Jaringan Downline Anda</h4>
-            <p style="text-align: right; color: #ffcc00;">Total Bonus Jaringan: <span id="totalNetworkBonusModal">0.00000</span></p>
+            <p style="text-align: right; color: #ffcc00;">Total Bonus Jaringan: <span
+                    id="totalNetworkBonusModal">0.00000</span></p>
             <div id="downlineListModal" style="max-height: 400px; overflow-y: auto;">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -700,7 +732,7 @@
             <span class="close-button" onclick="closeModal('bonusHistoryModal')">&times;</span>
             <h4 style="color: #00ff62; text-align: center; margin-bottom: 15px;">Riwayat Bonus</h4>
             <div id="bonusHistoryListModal" style="max-height: 400px; overflow-y: auto;">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -727,7 +759,7 @@
 
         const BONUS_CHAT_UPLINE_1 = 0.015;
         const BONUS_CHAT_UPLINE_2 = 0.007;
-        const MAX_DAILY_CHAT_BONUS_UPLINE = 3; // Batasan bonus chat harian untuk upline dari referral
+        const MAX_DAILY_CHAT_BONUS_UPLINE = 1; // Batasan bonus chat harian untuk upline dari referral
 
         const BONUS_REFERRAL_LEVEL_1 = 0.5;
         const BONUS_REFERRAL_LEVEL_2 = 0.25;
@@ -871,10 +903,7 @@
                     await db.ref(`users/${targetUid}/bonuses`).push(bonusEntry);
 
 
-                    await db.ref("users/" + targetUid).update(updates);
-
-                    const bonusRef = db.ref("bonusHistory/" + targetUid).push();
-                    await bonusRef.set({
+                    await db.ref("bonusHistory/" + targetUid).push({
                         date: new Date().toLocaleDateString('id-ID'),
                         amount: bonusAmount,
                         from: fromUsername,
@@ -1219,8 +1248,7 @@
 
                 await db.ref("users/" + user.uid).update(updates); // Perbarui user data
 
-                const withdrawRef = db.ref("withdrawHistory/" + user.uid).push();
-                await withdrawRef.set({
+                await db.ref("withdrawHistory/" + user.uid).push({
                     nama: nama,
                     username: username,
                     wallet: wallet,
@@ -1285,13 +1313,6 @@
                 const userRef = db.ref("users/" + user.uid);
                 const userSnap = await userRef.once("value");
                 const userData = userSnap.val();
-
-                // Hanya cek isReferralActive di sini, karena voucher sekarang bisa mengaktifkan kembali
-                // if (userData && userData.isReferralActive) {
-                //     voucherMessageEl.style.display = 'block';
-                //     voucherMessageEl.textContent = "⚠️ Status referral Anda sudah aktif.";
-                //     return;
-                // }
 
                 const snap = await db.ref("vouchers/" + voucherCode).once("value");
                 const voucherData = snap.val();
@@ -1381,7 +1402,7 @@
                     loadDownlines(currentAuthUser.uid);
                     loadBonusHistory(currentAuthUser.uid);
                 }
-                
+
                 document.getElementById('referralStatusWarning').style.display = 'none';
 
             } catch (err) {
@@ -1403,10 +1424,10 @@
 
         async function loadDownlines(myUid) {
             const downlineContainer = document.getElementById('downlineListModal');
-            const totalNetworkBonusSpan = document.getElementById('totalNetworkBonusModal'); 
+            const totalNetworkBonusSpan = document.getElementById('totalNetworkBonusModal');
 
             if (!downlineContainer) return;
-            downlineContainer.innerHTML = ''; 
+            downlineContainer.innerHTML = '';
 
             const loadingIndicator = document.createElement('p');
             loadingIndicator.textContent = "Memuat data downline dan bonus...";
@@ -1417,38 +1438,38 @@
             try {
                 const [usersSnapshot, myBonusesSnapshot] = await Promise.all([
                     db.ref('users').once('value'),
-                    db.ref(`users/${myUid}/bonuses`).once('value') 
+                    db.ref(`users/${myUid}/bonuses`).once('value')
                 ]);
 
                 const users = usersSnapshot.val();
-                const myBonuses = myBonusesSnapshot.val() || {}; 
+                const myBonuses = myBonusesSnapshot.val() || {};
 
                 if (!users) {
                     downlineContainer.textContent = "Tidak ada data pengguna.";
-                    if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
+                    if (totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
                     return;
                 }
 
                 const myUser = users[myUid];
                 if (!myUser || !myUser.referralCode) {
                     downlineContainer.textContent = "Data pengguna Anda tidak lengkap.";
-                    if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
+                    if (totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
                     return;
                 }
 
                 const myReferralCode = myUser.referralCode;
 
                 const level1Downlines = [];
-                const level2DownlinesMap = {}; 
-                const level1BonusMap = {};    
-                const level2BonusMap = {};    
+                const level2DownlinesMap = {};
+                const level1BonusMap = {};
+                const level2BonusMap = {};
 
                 // Inisialisasi peta bonus dan hitung total bonus per downline
                 let currentTotalNetworkBonus = 0;
                 for (const bonusId in myBonuses) {
                     const bonus = myBonuses[bonusId];
                     if (bonus.amount && bonus.fromUid) {
-                        currentTotalNetworkBonus += bonus.amount; 
+                        currentTotalNetworkBonus += bonus.amount;
                         // Pastikan fromUid ada di peta, jika tidak, inisialisasi
                         if (level1BonusMap[bonus.fromUid] === undefined) level1BonusMap[bonus.fromUid] = 0;
                         if (level2BonusMap[bonus.fromUid] === undefined) level2BonusMap[bonus.fromUid] = 0;
@@ -1460,15 +1481,15 @@
                         }
                     }
                 }
-                if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(currentTotalNetworkBonus);
+                if (totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(currentTotalNetworkBonus);
 
                 // Kumpulkan semua downline Level 1 terlebih dahulu
                 for (const uid in users) {
                     const user = users[uid];
                     if (user.uplineCode === myReferralCode) {
-                        level1Downlines.push({ 
-                            uid: uid, 
-                            username: user.username, 
+                        level1Downlines.push({
+                            uid: uid,
+                            username: user.username,
                             referralCode: user.referralCode || '',
                             totalBonusFromThisDownline: level1BonusMap[uid] || 0, // Dapatkan bonus dari map
                             isActivated: user.isReferralActive || false // Status aktivasi
@@ -1476,7 +1497,7 @@
                         level2DownlinesMap[user.referralCode] = []; // Inisialisasi array untuk Level 2 dari downline ini
                     }
                 }
-                
+
                 // Kumpulkan semua downline Level 2 dan tambahkan bonusnya ke map level2DownlinesMap
                 for (const uid in users) {
                     const user = users[uid];
@@ -1484,19 +1505,19 @@
                     for (const level1D of level1Downlines) {
                         if (user.uplineCode === level1D.referralCode) {
                             if (level2DownlinesMap[level1D.referralCode]) {
-                                level2DownlinesMap[level1D.referralCode].push({ 
-                                    uid: uid, 
+                                level2DownlinesMap[level1D.referralCode].push({
+                                    uid: uid,
                                     username: user.username,
                                     totalBonusFromThisDownline: level2BonusMap[uid] || 0, // Dapatkan bonus dari map
                                     isActivated: user.isReferralActive || false // Status aktivasi
                                 });
                             }
-                            break; 
+                            break;
                         }
                     }
                 }
 
-                downlineContainer.innerHTML = ''; 
+                downlineContainer.innerHTML = '';
 
                 if (level1Downlines.length === 0) {
                     downlineContainer.textContent = "Anda belum memiliki jaringan downline Level 1.";
@@ -1504,8 +1525,8 @@
                 }
 
                 const ul = document.createElement('ul');
-                ul.classList.add('downline-list-container'); 
-                
+                ul.classList.add('downline-list-container');
+
                 // Batasi tampilan Level 1 menjadi maksimal 10
                 const displayLimitLevel1 = 10;
                 const level1ToDisplay = level1Downlines.slice(0, displayLimitLevel1);
@@ -1533,7 +1554,7 @@
 
                 downlineContainer.appendChild(ul);
 
-                downlineContainer.addEventListener('click', function(event) {
+                downlineContainer.addEventListener('click', function (event) {
                     if (event.target.classList.contains('view-level2-link')) {
                         const referralCode = event.target.dataset.referralCode;
                         const uplineUsername = event.target.dataset.username;
@@ -1544,7 +1565,7 @@
             } catch (error) {
                 console.error("Error loading downlines:", error);
                 downlineContainer.textContent = "Terjadi kesalahan saat memuat downline.";
-                if(totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
+                if (totalNetworkBonusSpan) totalNetworkBonusSpan.textContent = formatBonusAmount(0);
             }
         }
 
@@ -1559,8 +1580,8 @@
 
         function showLevel2DownlinesModal(uplineReferralCode, uplineUsername, allLevel2Data) {
             currentUplineUsernameSpan.textContent = uplineUsername;
-            level2DownlineList.innerHTML = ''; 
-            noLevel2Message.style.display = 'none'; 
+            level2DownlineList.innerHTML = '';
+            noLevel2Message.style.display = 'none';
 
             const level2s = allLevel2Data[uplineReferralCode] || [];
 
@@ -1599,14 +1620,14 @@
                 }
 
             } else {
-                noLevel2Message.style.display = 'block'; 
+                noLevel2Message.style.display = 'block';
             }
 
-            level2Modal.style.display = 'flex'; 
+            level2Modal.style.display = 'flex';
         }
 
         // Tutup modal saat user mengklik di luar area modal content
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == level2Modal) {
                 level2Modal.style.display = 'none';
             }
@@ -1722,7 +1743,9 @@
         // --- Fungsi untuk mengunduh voucher sebagai file teks ---
         function downloadVouchersAsTextFile(voucherCodes, filename) {
             const content = voucherCodes.join('\n');
-            const blob = new Blob([content], { type: 'text/plain' });
+            const blob = new Blob([content], {
+                type: 'text/plain'
+            });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
